@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import './FlightSearch.css';
+import './css/FlightSearch.css';
 
 interface FlightData {
   origen: string;

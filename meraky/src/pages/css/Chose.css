@@ -1,0 +1,34 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.bienvenida {
+  color: #000a77;
+  margin-top: 2rem;
+}
+.btn-row {
+  display: flex;
+  justify-content: center; 
+  align-items: center;
+  gap: 15rem;            
+  margin: 6rem auto;
+}
+
+
+.btn-glow {
+  will-change: filter, transform;
+  transition: filter 300ms, transform 150ms;
+  background-color: #000a77;
+  padding: 1em 2.5em;  
+  font-size: 1.3em;  
+  border-radius: 50px; 
+}
+
+
+.btn-glow:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+  transform: translateY(-2px) scale(1.05); 
+}

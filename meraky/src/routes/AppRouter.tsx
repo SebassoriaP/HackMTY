@@ -1,6 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import Test from "../pages/Test";
 import Choose from "../pages/Choose";
+import FlightSearch from "../pages/FlightSearch";
 
 
 const AppRouter = () => {
@@ -8,11 +9,11 @@ const AppRouter = () => {
     <Routes>
         <Route path="/" element={<Choose/>} />
 
-        <Route path="/A" element={ 
-            <Test />
+        <Route path="/pick" element={ 
+            <FlightSearch />
         } />
 
-        <Route path="/B" element={ 
+        <Route path="/pack" element={ 
             <Test />
         } />
 

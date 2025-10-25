@@ -1,42 +1,40 @@
 import { useState } from 'react';
 import './css/FlightSearch.css';
-
-interface FlightData {
-  origen: string;
-  destino: string;
-  hora: string;
-  trolloys: number;
-}
-
-interface FlightsDatabase {
-  [key: string]: FlightData;
-}
+import { getVuelos } from '../services/vuelos';
+import type { Vuelo } from '../types/vuelos';
 
 const FlightSearch = () => {
   const [flightNumber, setFlightNumber] = useState<string>('');
-  const [flightData, setFlightData] = useState<FlightData | null>(null);
+  const [flightData, setFlightData] = useState<Vuelo | null>(null);
   const [notFound, setNotFound] = useState<boolean>(false);
   const [searchedFlight, setSearchedFlight] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false);
 
-  // Base de datos dummy de vuelos
-  const vuelosDummy: FlightsDatabase = {
-    "AM123": { origen: "Ciudad de México", destino: "Madrid", hora: "14:30", trolloys: 12 },
-    "1": { origen: "Frankfurt", destino: "Toronto", hora: "09:45", trolloys: 8 },
-    "UA789": { origen: "Chicago", destino: "Tokio", hora: "22:15", trolloys: 15 },
-    "IB999": { origen: "Madrid", destino: "Nueva York", hora: "07:00", trolloys: 10 },
-    "AF350": { origen: "París", destino: "Montreal", hora: "11:50", trolloys: 9 }
-  };
-
-  const buscarVuelo = () => {
+  const buscarVuelo = async () => {
     const flightNum = flightNumber.trim().toUpperCase();
     setSearchedFlight(flightNum);
+    setLoading(true);
 
-    if (vuelosDummy[flightNum]) {
-      setFlightData(vuelosDummy[flightNum]);
-      setNotFound(false);
-    } else {
+    try {
+      // Obtener todos los vuelos de Firebase
+      const vuelos = await getVuelos();
+      
+      // Buscar el vuelo por número
+      const vueloEncontrado = vuelos.find(vuelo => vuelo.numero_vuelo === flightNum);
+
+      if (vueloEncontrado) {
+        setFlightData(vueloEncontrado);
+        setNotFound(false);
+      } else {
+        setFlightData(null);
+        setNotFound(true);
+      }
+    } catch (error) {
+      console.error('Error al buscar vuelo:', error);
       setFlightData(null);
       setNotFound(true);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -48,7 +46,7 @@ const FlightSearch = () => {
 
   return (
     <div className="flight-search-container">
-      <h1>Ingresar vuelo para registrar RFDI o QR</h1>
+      <h1>Escanear QR para pick carrito</h1>
       
       <div className="input-section">
         <label htmlFor="flightInput">Número de vuelo</label>
@@ -60,7 +58,9 @@ const FlightSearch = () => {
           onChange={(e) => setFlightNumber(e.target.value)}
           onKeyPress={handleKeyPress}
         />
-        <button onClick={buscarVuelo}>Buscar vuelo</button>
+        <button onClick={buscarVuelo} disabled={loading}>
+          {loading ? 'Buscando...' : 'Buscar vuelo'}
+        </button>
       </div>
 
       {(flightData || notFound) && (
@@ -69,16 +69,16 @@ const FlightSearch = () => {
             <>
               <h2>Datos del vuelo {searchedFlight}</h2>
               <div className="data-item">
-                <strong>Origen:</strong> {flightData.origen}
+                <strong>Número de vuelo:</strong> {flightData.numero_vuelo}
               </div>
               <div className="data-item">
-                <strong>Destino:</strong> {flightData.destino}
+                <strong>QR ID:</strong> {flightData.qr_id}
               </div>
               <div className="data-item">
-                <strong>Hora de salida:</strong> {flightData.hora}
+                <strong>Tipo:</strong> {flightData.tipo}
               </div>
-              <div className="trolloys">
-                Debe preparar <strong>{flightData.trolloys}</strong> trolloys
+              <div className="data-item">
+                <strong>Artículos:</strong> {JSON.stringify(flightData.articulos)}
               </div>
             </>
           ) : (

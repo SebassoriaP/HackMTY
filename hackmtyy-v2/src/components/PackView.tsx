@@ -192,7 +192,43 @@ const PackView = () => {
     setShowScanner(false);
   }, []);
 
-  // Simular detección automática de IA (se ejecuta cada 3 segundos)
+  // Manejar detecciones de YOLO en tiempo real
+  const handleDetectionUpdate = useCallback((detections: Detection[], counts: Record<string, number>) => {
+    if (!trolleyLoaded || products.length === 0) return;
+
+    // Mapear las clases detectadas a nombres de productos
+    // Intentamos matchear por nombre de clase de YOLO con nombre de producto
+    setProducts((prevProducts) => {
+      let updated = false;
+      const newProducts = prevProducts.map((product) => {
+        // Si ya está detectado, no cambiar
+        if (product.detected) return product;
+
+        // Verificar si alguna detección coincide con este producto
+        // Puedes personalizar esta lógica según tus necesidades
+        const productNameLower = product.name.toLowerCase();
+        
+        // Buscar coincidencias en las detecciones
+        for (const [className] of Object.entries(counts)) {
+          const classNameLower = className.toLowerCase();
+          
+          // Coincidencia exacta o parcial
+          if (productNameLower.includes(classNameLower) || classNameLower.includes(productNameLower)) {
+            updated = true;
+            return { ...product, detected: true };
+          }
+        }
+
+        return product;
+      });
+
+      // Solo actualizar si hay cambios reales
+      return updated ? newProducts : prevProducts;
+    });
+  }, [trolleyLoaded, products.length]);
+
+  // Simular detección automática de IA (BACKUP - solo si no hay detecciones reales)
+  // Este useEffect se puede remover completamente si prefieres solo usar YOLO real
   useEffect(() => {
     if (!trolleyLoaded || products.length === 0) return;
 
@@ -383,7 +419,7 @@ const PackView = () => {
 
           {/* Workspace con cámara y lista */}
           <div className="pack-view__workspace">
-            {/* Cámara con IA simulada */}
+            {/* Cámara con IA en tiempo real */}
             <div className="pack-view__camera">
               <CameraPreview title="Cámara con IA - Detección Automática" />
               <div style={{

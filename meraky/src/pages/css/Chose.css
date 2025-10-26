@@ -6,7 +6,7 @@
 }
 
 .bienvenida {
-  color: #000a77;
+  color: white;
   margin-top: 2rem;
 }
 .btn-row {
@@ -21,7 +21,7 @@
 .btn-glow {
   will-change: filter, transform;
   transition: filter 300ms, transform 150ms;
-  background-color: #000a77;
+  background-color: white;
   padding: 1em 2.5em;  
   font-size: 1.3em;  
   border-radius: 50px; 

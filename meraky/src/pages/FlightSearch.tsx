@@ -12,15 +12,13 @@ const FlightSearch = () => {
 
   const buscarVuelo = async () => {
     const flightNum = flightNumber.trim().toUpperCase();
+    if (!flightNum) return;
     setSearchedFlight(flightNum);
     setLoading(true);
 
     try {
-      // Obtener todos los vuelos de Firebase
       const vuelos = await getVuelos();
-      
-      // Buscar el vuelo por número
-      const vueloEncontrado = vuelos.find(vuelo => vuelo.numero_vuelo === flightNum);
+      const vueloEncontrado = vuelos.find(v => v.numero_vuelo === flightNum);
 
       if (vueloEncontrado) {
         setFlightData(vueloEncontrado);
@@ -38,17 +36,15 @@ const FlightSearch = () => {
     }
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      buscarVuelo();
-    }
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') buscarVuelo();
   };
 
   return (
-    <div className="flight-search-container">
+    <div className="flight-search">
       <h1>Escanear QR para pick carrito</h1>
-      
-      <div className="input-section">
+
+      <div className="form-row">
         <label htmlFor="flightInput">Número de vuelo</label>
         <input
           type="text"
@@ -56,7 +52,7 @@ const FlightSearch = () => {
           placeholder="Ejemplo: AM123, LH456, UA789"
           value={flightNumber}
           onChange={(e) => setFlightNumber(e.target.value)}
-          onKeyPress={handleKeyPress}
+          onKeyDown={handleKeyDown}
         />
         <button onClick={buscarVuelo} disabled={loading}>
           {loading ? 'Buscando...' : 'Buscar vuelo'}
@@ -64,7 +60,7 @@ const FlightSearch = () => {
       </div>
 
       {(flightData || notFound) && (
-        <div className="result">
+        <section className="result">
           {flightData ? (
             <>
               <h2>Datos del vuelo {searchedFlight}</h2>
@@ -82,11 +78,9 @@ const FlightSearch = () => {
               </div>
             </>
           ) : (
-            <h2>
-              No se encontraron datos para el vuelo <strong>{searchedFlight}</strong>
-            </h2>
+            <h2>No se encontraron datos para el vuelo <strong>{searchedFlight}</strong></h2>
           )}
-        </div>
+        </section>
       )}
     </div>
   );

@@ -1,8 +1,16 @@
 import fs from "fs";
 import { ElevenLabsClient } from "elevenlabs";
+import dotenv from "dotenv";
 
-// --- 🔑 Tu API Key de ElevenLabs ---
-const ELEVENLABS_API_KEY = "sk_830a945e429d51462bf7e79649fa6bde4633e158e65814fa";
+// Cargar variables de entorno
+dotenv.config();
+
+// --- 🔑 Obtener API Key desde .env ---
+const ELEVENLABS_API_KEY = process.env.VITE_ELEVENLABS_API_KEY;
+
+if (!ELEVENLABS_API_KEY) {
+  throw new Error("VITE_ELEVENLABS_API_KEY no está configurada en .env");
+}
 
 // --- Cliente de ElevenLabs ---
 const client = new ElevenLabsClient({

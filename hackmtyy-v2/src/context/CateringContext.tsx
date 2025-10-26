@@ -184,21 +184,29 @@ export const CateringProvider = ({ children }: PropsWithChildren) => {
           display: 'flex', 
           alignItems: 'center', 
           justifyContent: 'center',
-          backgroundColor: '#1a237e',
+          background: 'linear-gradient(135deg, #3c0059 0%, #1a0026 50%, #000000 100%)',
           color: 'white',
           zIndex: 9999,
           fontSize: '18px'
         }}>
           <div style={{ textAlign: 'center' }}>
-            <h1 style={{ fontSize: '48px', marginBottom: '20px' }}>🍾✈️</h1>
-            <h2 style={{ marginBottom: '10px' }}>Centro de Catering Aéreo</h2>
-            <p>Cargando datos desde Firebase...</p>
             <div style={{ 
-              marginTop: '20px', 
-              width: '200px', 
-              height: '4px', 
-              backgroundColor: 'rgba(255,255,255,0.3)',
-              borderRadius: '2px',
+              width: '80px', 
+              height: '80px', 
+              margin: '0 auto 30px',
+              border: '4px solid rgba(255, 255, 255, 0.2)',
+              borderTop: '4px solid white',
+              borderRadius: '50%',
+              animation: 'spin 1s linear infinite'
+            }}></div>
+            <h2 style={{ marginBottom: '10px', fontSize: '28px', fontWeight: '700' }}>Centro de Catering Aéreo</h2>
+            <p style={{ color: 'rgba(255, 255, 255, 0.8)' }}>Cargando datos desde Firebase...</p>
+            <div style={{ 
+              marginTop: '30px', 
+              width: '240px', 
+              height: '6px', 
+              backgroundColor: 'rgba(255,255,255,0.2)',
+              borderRadius: '3px',
               overflow: 'hidden',
               marginLeft: 'auto',
               marginRight: 'auto'
@@ -206,7 +214,7 @@ export const CateringProvider = ({ children }: PropsWithChildren) => {
               <div style={{
                 width: '50%',
                 height: '100%',
-                backgroundColor: 'white',
+                background: 'linear-gradient(90deg, #9d4edd, #c77dff)',
                 animation: 'loading 1.5s ease-in-out infinite'
               }}></div>
             </div>

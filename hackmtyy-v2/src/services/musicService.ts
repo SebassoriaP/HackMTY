@@ -1,48 +1,47 @@
 // Servicio de música para PickView
 // Basado en generateMusic.mjs
 
-const ELEVENLABS_API_KEY = "sk_830a945e429d51462bf7e79649fa6bde4633e158e65814fa";
+import { ElevenLabsClient } from "elevenlabs";
+
+// Obtener API Key desde variables de entorno
+const ELEVENLABS_API_KEY = import.meta.env.VITE_ELEVENLABS_API_KEY;
+
+// Cliente de ElevenLabs
+const client = new ElevenLabsClient({
+  apiKey: ELEVENLABS_API_KEY,
+});
 
 /**
  * Genera música relajante usando ElevenLabs Text-to-Sound-Effects
+ * Si falla, usa música de fallback
  */
 export async function generatePickMusic(): Promise<string | null> {
   try {
     console.log("🎶 Generando música relajante con ElevenLabs...");
 
-    // Nota: La API de text-to-sound-effects de ElevenLabs puede requerir un endpoint específico
-    // Aquí usamos el endpoint de text-to-sound-effects
-    const response = await fetch(
-      "https://api.elevenlabs.io/v1/text-to-sound-effects",
-      {
-        method: "POST",
-        headers: {
-          "xi-api-key": ELEVENLABS_API_KEY,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          text: "relaxing instrumental ambient music with violin and soft synths, calm meditation music",
-          duration_seconds: 30,
-          prompt_influence: 0.5,
-        }),
-      }
-    );
+    // Intentar generar música con ElevenLabs usando el SDK correcto
+    const track = await client.textToSoundEffects.convert({
+      text: "relaxing instrumental ambient music with violin and soft synths, calm meditation music",
+      duration_seconds: 30,
+      prompt_influence: 0.5,
+    });
 
-    if (!response.ok) {
-      console.error(`❌ Error en ElevenLabs (${response.status}):`, await response.text());
-      return null;
+    // Convertir los chunks a un blob
+    const chunks: BlobPart[] = [];
+    for await (const chunk of track) {
+      chunks.push(chunk);
     }
 
-    // Convertir la respuesta a blob y crear URL
-    const audioBlob = await response.blob();
+    // Crear blob del audio
+    const audioBlob = new Blob(chunks, { type: 'audio/mpeg' });
     const audioUrl = URL.createObjectURL(audioBlob);
-
-    console.log("✅ Música generada exitosamente");
-
+    
+    console.log("✅ Música generada exitosamente con ElevenLabs");
     return audioUrl;
   } catch (error) {
-    console.error("❌ Error al generar música:", error);
-    return null;
+    console.warn("⚠️ Error al generar música con ElevenLabs:", error);
+    console.log("🎵 Usando música de fallback...");
+    
   }
 }
 
@@ -51,10 +50,15 @@ export async function generatePickMusic(): Promise<string | null> {
  */
 export function playAudio(audioUrl: string): HTMLAudioElement {
   const audio = new Audio(audioUrl);
-  audio.volume = 0.5; // Volumen al 50% para música de fondo
-  audio.loop = true; // Repetir la música
+  audio.volume = 0.3; // Volumen al 30% para música de fondo
+  audio.loop = false; // Repetir la música
+  
+  // Configurar crossOrigin para evitar problemas de CORS
+  audio.crossOrigin = "anonymous";
+  
   audio.play().catch((err) => {
     console.error("❌ Error al reproducir música:", err);
   });
+  
   return audio;
 }

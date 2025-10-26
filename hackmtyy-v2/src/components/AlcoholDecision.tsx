@@ -1,5 +1,3 @@
-import { useState } from "react";
-import { useFlightContext } from "../context/FlightContext";
 import { Item } from "../types";
 
 interface AlcoholDecisionProps {
@@ -7,80 +5,58 @@ interface AlcoholDecisionProps {
   items: Item[];
 }
 
-const options = [
-  { value: "tirar", label: "Tirar" },
-  { value: "reusar", label: "Reusar" },
-  { value: "mezclar", label: "Mezclar" }
-] as const;
+/**
+ * Muestra las decisiones automáticas de bottle handling para bebidas alcohólicas
+ * Las decisiones se toman automáticamente al crear el pedido según criterios de la aerolínea
+ */
+const AlcoholDecision = ({ items }: AlcoholDecisionProps) => {
+  // Filtrar solo items alcohólicos que tienen decisión automática
+  const alcoholItems = items.filter(item => item.alcohol && item.bottleDecision);
 
-const AlcoholDecision = ({ trolleyId, items }: AlcoholDecisionProps) => {
-  const {
-    alcoholDecisions,
-    setAlcoholDecision,
-    confirmAlcoholDecisions,
-    alcoholConfirmed
-  } = useFlightContext();
-  const [message, setMessage] = useState<string | null>(null);
-
-  const decisions = alcoholDecisions[trolleyId] ?? {};
-  const allSelected = items.every((item) => decisions[item.sku]);
-  const isConfirmed = alcoholConfirmed[trolleyId] ?? false;
-
-  const handleSelect = (sku: string, value: string) => {
-    setMessage(null);
-    setAlcoholDecision(trolleyId, sku, value as typeof options[number]["value"]);
-  };
-
-  const handleConfirm = () => {
-    if (!allSelected) {
-      setMessage("Completa todas las decisiones antes de continuar");
-      return;
-    }
-    const success = confirmAlcoholDecisions(trolleyId);
-    if (success) {
-      setMessage("Decisiones guardadas. Puedes iniciar el empaque.");
-    } else {
-      setMessage("Hubo un problema al confirmar. Intenta de nuevo.");
-    }
-  };
+  if (alcoholItems.length === 0) {
+    return null;
+  }
 
   return (
     <div className="alcohol-decision">
-      <h3>Manejo de Alcohol</h3>
+      <h3>Control de Calidad - Bebidas Alcohólicas</h3>
       <p className="alcohol-decision__hint">
-        Define el destino de cada bebida alcohólica antes de continuar.
+        Decisiones automáticas basadas en criterios de calidad de la aerolínea
       </p>
-      {items.map((item) => (
-        <div key={item.sku} className="alcohol-item">
-          <div className="alcohol-item__label">
-            {item.name} ({item.qty} uds)
+      
+      {alcoholItems.map((item) => {
+        const decisionClass = `decision-badge decision-badge--${item.bottleDecision}`;
+        const decisionLabel = {
+          reutilizar: "✓ REUTILIZAR",
+          rellenar: "↻ RELLENAR", 
+          desechar: "✗ DESECHAR"
+        }[item.bottleDecision || 'desechar'];
+
+        return (
+          <div key={item.sku} className="alcohol-item">
+            <div className="alcohol-item__header">
+              <div className="alcohol-item__label">
+                {item.name} ({item.qty} uds)
+              </div>
+              <span className={decisionClass}>
+                {decisionLabel}
+              </span>
+            </div>
+            {item.bottleReason && (
+              <div className="alcohol-item__reason">
+                <small>{item.bottleReason}</small>
+              </div>
+            )}
           </div>
-          <div className="alcohol-item__options">
-            {options.map((option) => (
-              <label key={option.value} className="alcohol-item__option">
-                <input
-                  type="radio"
-                  name={`${trolleyId}-${item.sku}`}
-                  value={option.value}
-                  checked={decisions[item.sku] === option.value}
-                  onChange={(event) => handleSelect(item.sku, event.target.value)}
-                  disabled={isConfirmed}
-                />
-                {option.label}
-              </label>
-            ))}
-          </div>
-        </div>
-      ))}
-      <button
-        type="button"
-        className="primary-button"
-        onClick={handleConfirm}
-        disabled={isConfirmed}
-      >
-        {isConfirmed ? "Decisiones confirmadas" : "Confirmar decisiones"}
-      </button>
-      {message && <div className="status status--info">{message}</div>}
+        );
+      })}
+      
+      <div className="alcohol-decision__summary">
+        <p>
+          ✓ Todas las decisiones han sido evaluadas automáticamente.
+          Puedes proceder con el proceso de Pick.
+        </p>
+      </div>
     </div>
   );
 };

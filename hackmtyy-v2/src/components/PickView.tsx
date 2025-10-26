@@ -1,7 +1,8 @@
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useMemo, useState, useEffect, useRef } from "react";
 import { useFlightContext } from "../context/FlightContext";
 import CameraPreview from "./CameraPreview";
 import { Trolley } from "../types";
+import { generatePickMusic, playAudio } from "../services/musicService";
 
 const PickView = () => {
   const {
@@ -13,6 +14,57 @@ const PickView = () => {
   } = useFlightContext();
   const [scanValue, setScanValue] = useState<string>("");
   const [feedback, setFeedback] = useState<string | null>(null);
+  const [musicLoading, setMusicLoading] = useState<boolean>(false);
+  const [musicPlaying, setMusicPlaying] = useState<boolean>(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  // 🎵 Generar música al iniciar el proceso de PICK (automáticamente al entrar a esta vista)
+  useEffect(() => {
+    const initMusic = async () => {
+      if (musicPlaying || musicLoading) {
+        console.log("🎵 [PickView] Música ya está en proceso o reproduciéndose");
+        return;
+      }
+      
+      console.log("🎵 [PickView] Iniciando generación de música...");
+      setMusicLoading(true);
+      
+      try {
+        const audioUrl = await generatePickMusic();
+        
+        if (audioUrl) {
+          console.log("🎵 [PickView] URL de audio recibida, reproduciendo...");
+          audioRef.current = playAudio(audioUrl);
+          setMusicPlaying(true);
+          setFeedback("🎵 Música de trabajo iniciada");
+          
+          // Limpiar el feedback después de 3 segundos
+          setTimeout(() => setFeedback(null), 3000);
+        } else {
+          console.warn("⚠️ [PickView] No se pudo generar música");
+          setFeedback("⚠️ No se pudo generar música de fondo");
+          setTimeout(() => setFeedback(null), 3000);
+        }
+      } catch (error) {
+        console.error("❌ [PickView] Error al inicializar música:", error);
+      } finally {
+        setMusicLoading(false);
+      }
+    };
+
+    // Iniciar música automáticamente al montar el componente
+    console.log("🚀 [PickView] Componente montado - Iniciando música automáticamente");
+    initMusic();
+
+    // Cleanup: detener música al desmontar
+    return () => {
+      console.log("🛑 [PickView] Componente desmontado - Deteniendo música");
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+    };
+  }, []); // Solo se ejecuta al montar el componente
 
   const trolleys = selectedFlight?.trolleys ?? [];
   const activeTrolley = useMemo(
@@ -68,6 +120,19 @@ const PickView = () => {
       </div>
       <div className="pick-view__details">
         <h2>Recogida de artículos por trolley</h2>
+        
+        {/* 🎵 Indicador de música */}
+        {musicPlaying && (
+          <div className="status status--success">
+            🎵 Música de trabajo activada
+          </div>
+        )}
+        {musicLoading && (
+          <div className="status status--info">
+            🎶 Cargando música...
+          </div>
+        )}
+        
         <p className="pick-view__hint">
           Selecciona un trolley para registrar escaneos. Asegúrate de llevarlo a
           su mesa asignada.

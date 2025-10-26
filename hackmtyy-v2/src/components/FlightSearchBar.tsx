@@ -12,10 +12,10 @@ const FlightSearchBar = () => {
   const [inputValue, setInputValue] = useState<string>("");
   const [feedback, setFeedback] = useState<string | null>(null);
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setFeedback(null);
-    const success = selectFlight(inputValue);
+    const success = await selectFlight(inputValue);
     if (success) {
       setRole(null);
       setSelectedPackTrolleyId(null);
@@ -27,6 +27,8 @@ const FlightSearchBar = () => {
     <div className="flight-search">
       <form onSubmit={handleSubmit} className="flight-search__form">
         <input
+          id="flight-search-input"
+          name="flightNumber"
           className="flight-search__input"
           placeholder="Ingresa número de vuelo (ej. AM123)"
           value={inputValue}

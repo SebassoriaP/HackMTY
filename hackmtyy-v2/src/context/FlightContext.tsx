@@ -4,15 +4,17 @@ import {
   useCallback,
   useContext,
   useMemo,
-  useState
+  useState,
+  useEffect
 } from "react";
-import { flightsDB } from "../data/flights";
+import { getPedidoCatering } from "../firebase/utils";
 import {
   AlcoholDecisionOption,
   Flight,
   Item,
   Role,
-  Trolley
+  Trolley,
+  PedidoCatering
 } from "../types";
 
 type ItemProgress = Record<string, number>;
@@ -22,6 +24,7 @@ type AlcoholDecisionState = Record<string, Record<string, AlcoholDecisionOption>
 interface FlightContextValue {
   selectedFlightId: string | null;
   selectedFlight: Flight | null;
+  selectedPedido: PedidoCatering | null;
   flightError: string | null;
   role: Role | null;
   pickProgress: ProgressState;
@@ -30,7 +33,7 @@ interface FlightContextValue {
   activePickTrolleyId: string | null;
   alcoholDecisions: AlcoholDecisionState;
   alcoholConfirmed: Record<string, boolean>;
-  selectFlight: (flightNumber: string) => boolean;
+  selectFlight: (flightNumber: string) => Promise<boolean>;
   setRole: (role: Role | null) => void;
   setSelectedPackTrolleyId: (trolleyId: string | null) => void;
   setActivePickTrolleyId: (trolleyId: string | null) => void;
@@ -45,6 +48,31 @@ interface FlightContextValue {
 }
 
 const FlightContext = createContext<FlightContextValue | undefined>(undefined);
+
+/**
+ * Convierte un PedidoCatering de Firebase al formato Flight que usa la UI
+ * Los items alcohólicos ya vienen con su decisión de bottle handling automática
+ */
+function convertPedidoToFlight(pedido: PedidoCatering): Flight {
+  // Crear un único trolley con todos los items del pedido
+  const trolley: Trolley = {
+    id: `T_${pedido.idPedido}`,
+    mesa: `Mesa ${pedido.vuelo}`,
+    items: pedido.items.map(item => ({
+      sku: item.productoId,
+      name: item.nombre,
+      qty: item.cantidad,
+      alcohol: (item.contenidoAlcohol !== undefined && item.contenidoAlcohol > 0),
+      // Incluir la decisión automática de bottle handling si existe
+      bottleDecision: item.decisionBottleHandling,
+      bottleReason: item.razonDecision
+    }))
+  };
+
+  return {
+    trolleys: [trolley]
+  };
+}
 
 const buildPickProgress = (flight: Flight): ProgressState =>
   flight.trolleys.reduce<ProgressState>((acc, trolley) => {
@@ -97,6 +125,7 @@ const getItemFromFlight = (
 export const FlightProvider = ({ children }: PropsWithChildren) => {
   const [selectedFlightId, setSelectedFlightId] = useState<string | null>(null);
   const [selectedFlight, setSelectedFlight] = useState<Flight | null>(null);
+  const [selectedPedido, setSelectedPedido] = useState<PedidoCatering | null>(null);
   const [flightError, setFlightError] = useState<string | null>(null);
   const [role, setRole] = useState<Role | null>(null);
   const [pickProgress, setPickProgress] = useState<ProgressState>({});
@@ -117,6 +146,7 @@ export const FlightProvider = ({ children }: PropsWithChildren) => {
   const resetState = useCallback(() => {
     setSelectedFlightId(null);
     setSelectedFlight(null);
+    setSelectedPedido(null);
     setRole(null);
     setPickProgress({});
     setPackProgress({});
@@ -127,7 +157,7 @@ export const FlightProvider = ({ children }: PropsWithChildren) => {
   }, []);
 
   const selectFlight = useCallback(
-    (flightNumber: string) => {
+    async (flightNumber: string) => {
       const normalized = flightNumber.trim().toUpperCase();
       if (!normalized) {
         resetState();
@@ -135,27 +165,40 @@ export const FlightProvider = ({ children }: PropsWithChildren) => {
         return false;
       }
 
-      const found = flightsDB[normalized];
-      if (!found) {
+      try {
+        // Buscar pedido en Firebase por número de vuelo
+        const pedido = await getPedidoCatering(normalized);
+        
+        if (!pedido) {
+          resetState();
+          setFlightError("Vuelo no encontrado");
+          return false;
+        }
+
+        // Convertir pedido a formato Flight
+        const flight = convertPedidoToFlight(pedido);
+
+        setFlightError(null);
+        setSelectedFlightId(normalized);
+        setSelectedFlight(flight);
+        setSelectedPedido(pedido);
+        setRole(null);
+        setPickProgress(buildPickProgress(flight));
+        setPackProgress(buildPackProgress(flight));
+        setSelectedPackTrolleyId(null);
+        setActivePickTrolleyId(flight.trolleys[0]?.id ?? null);
+
+        const { decisions, confirmed } = buildAlcoholDecisionInit(flight);
+        setAlcoholDecisions(decisions);
+        setAlcoholConfirmed(confirmed);
+
+        return true;
+      } catch (error) {
+        console.error('Error al cargar vuelo:', error);
         resetState();
-        setFlightError("Vuelo no encontrado");
+        setFlightError("Error al cargar el vuelo");
         return false;
       }
-
-      setFlightError(null);
-      setSelectedFlightId(normalized);
-      setSelectedFlight(found);
-      setRole(null);
-      setPickProgress(buildPickProgress(found));
-      setPackProgress(buildPackProgress(found));
-      setSelectedPackTrolleyId(null);
-      setActivePickTrolleyId(found.trolleys[0]?.id ?? null);
-
-      const { decisions, confirmed } = buildAlcoholDecisionInit(found);
-      setAlcoholDecisions(decisions);
-      setAlcoholConfirmed(confirmed);
-
-      return true;
     },
     [resetState]
   );
@@ -263,6 +306,7 @@ export const FlightProvider = ({ children }: PropsWithChildren) => {
       packProgress,
       selectedPackTrolleyId,
       activePickTrolleyId,
+    selectedPedido,
       alcoholDecisions,
       alcoholConfirmed,
       selectFlight,
@@ -283,6 +327,7 @@ export const FlightProvider = ({ children }: PropsWithChildren) => {
       packProgress,
       selectedPackTrolleyId,
       activePickTrolleyId,
+    selectedPedido,
       alcoholDecisions,
       alcoholConfirmed,
       selectFlight,

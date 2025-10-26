@@ -6,23 +6,25 @@ interface QRScannerProps {
   onScanError?: (error: string) => void;
 }
 
+// Bandera global para prevenir múltiples instancias (persiste entre renders)
+let globalScannerInstance: Html5Qrcode | null = null;
+let isGloballyInitialized = false;
+
 const QRScanner = ({ onScanSuccess, onScanError }: QRScannerProps) => {
-  const scannerRef = useRef<Html5Qrcode | null>(null);
   const [isScanning, setIsScanning] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const hasScannedRef = useRef<boolean>(false); // Prevenir múltiples escaneos
-  const isInitializedRef = useRef<boolean>(false); // Prevenir doble inicialización
 
   useEffect(() => {
     // Inicializar el escáner cuando el componente se monta
     const initScanner = async () => {
-      // Si ya está inicializado, no hacer nada
-      if (isInitializedRef.current) {
-        console.log("Escáner ya inicializado, omitiendo...");
+      // Si ya está inicializado globalmente, no hacer nada
+      if (isGloballyInitialized) {
+        console.log("Escáner ya inicializado globalmente, omitiendo...");
         return;
       }
       
-      isInitializedRef.current = true;
+      isGloballyInitialized = true;
       
       try {
         // Limpiar cualquier instancia previa antes de crear una nueva
@@ -32,7 +34,7 @@ const QRScanner = ({ onScanSuccess, onScanError }: QRScannerProps) => {
         }
 
         // Crear instancia del escáner
-        scannerRef.current = new Html5Qrcode("qr-reader");
+        globalScannerInstance = new Html5Qrcode("qr-reader");
         setIsScanning(true);
 
         // Configuración del escáner
@@ -42,10 +44,10 @@ const QRScanner = ({ onScanSuccess, onScanError }: QRScannerProps) => {
         };
 
         // Iniciar el escaneo
-        await scannerRef.current.start(
+        await globalScannerInstance.start(
           { facingMode: "environment" }, // Usar cámara trasera en móviles
           config,
-          (decodedText) => {
+          (decodedText: string) => {
             // Cuando se detecta un QR exitosamente
             // Prevenir múltiples llamadas
             if (hasScannedRef.current) return;
@@ -58,7 +60,7 @@ const QRScanner = ({ onScanSuccess, onScanError }: QRScannerProps) => {
               onScanSuccess(decodedText);
             });
           },
-          (errorMessage) => {
+          (errorMessage: string) => {
             // Errores menores durante el escaneo (ignorar)
             // console.log("Escaneando...", errorMessage);
           }
@@ -67,6 +69,7 @@ const QRScanner = ({ onScanSuccess, onScanError }: QRScannerProps) => {
         console.error("Error al iniciar escáner:", err);
         const errorMsg = "No se pudo acceder a la cámara. Verifica los permisos.";
         setError(errorMsg);
+        isGloballyInitialized = false; // Resetear si falla
         if (onScanError) {
           onScanError(errorMsg);
         }
@@ -78,7 +81,6 @@ const QRScanner = ({ onScanSuccess, onScanError }: QRScannerProps) => {
     // Cleanup: detener el escáner cuando el componente se desmonta
     return () => {
       console.log("Limpiando escáner QR...");
-      isInitializedRef.current = false; // Resetear flag de inicialización
       hasScannedRef.current = false; // Resetear flag de escaneo
       
       // Detener y limpiar de forma asíncrona
@@ -91,18 +93,19 @@ const QRScanner = ({ onScanSuccess, onScanError }: QRScannerProps) => {
   }, []); // Intencionalmente vacío - solo se ejecuta al montar
 
   const stopScanner = async () => {
-    if (scannerRef.current) {
+    if (globalScannerInstance) {
       try {
         // Primero detener el escaneo
         if (isScanning) {
-          await scannerRef.current.stop();
+          await globalScannerInstance.stop();
           console.log("Escáner detenido");
           setIsScanning(false);
         }
         // Luego limpiar el DOM
-        await scannerRef.current.clear();
+        await globalScannerInstance.clear();
         console.log("Escáner limpiado");
-        scannerRef.current = null;
+        globalScannerInstance = null;
+        isGloballyInitialized = false; // Resetear flag global
         
         // Limpiar también el elemento del DOM por las dudas
         const qrReaderElement = document.getElementById("qr-reader");
@@ -113,10 +116,11 @@ const QRScanner = ({ onScanSuccess, onScanError }: QRScannerProps) => {
         console.error("Error al detener/limpiar escáner:", err);
         // Forzar limpieza aunque haya error
         try {
-          if (scannerRef.current) {
-            scannerRef.current.clear();
-            scannerRef.current = null;
+          if (globalScannerInstance) {
+            globalScannerInstance.clear();
+            globalScannerInstance = null;
           }
+          isGloballyInitialized = false;
           // Limpiar DOM manualmente
           const qrReaderElement = document.getElementById("qr-reader");
           if (qrReaderElement) {

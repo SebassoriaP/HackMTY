@@ -4,7 +4,7 @@
   font-weight: 400;
   color-scheme: light dark;
   color: #213547;
-  background-color: #ffffff; /* Fondo blanco global */
+  background: linear-gradient(to bottom, #3c0059 0%, #000000 100%);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;

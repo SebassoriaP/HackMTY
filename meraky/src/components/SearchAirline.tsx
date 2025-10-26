@@ -3,7 +3,7 @@ import { collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase/config";
 import "./css/SearchAirline.css"; 
 
-// Tipo de datos para las aerolíneas
+
 interface Airline {
   id: string;
   nombre: string;

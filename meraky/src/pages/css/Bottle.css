@@ -1,0 +1,94 @@
+.page {
+  max-width: 1100px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, sans-serif;
+  color: #000a77;
+}
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  gap: 1rem;
+}
+
+/* Barra de búsqueda */
+.searchInput {
+  flex: 1;
+  min-width: 250px;
+  padding: 0.8rem 1.1rem;
+  background-color: #f2f2f2;
+  border: 2px solid #ccc;
+  color: #000a77;
+  border-radius: 10px;
+  font-size: 1.05rem;
+  outline: none;
+  transition: all 0.25s ease-in-out;
+}
+.searchInput:focus {
+  border-color: #000a77;
+  background-color: #e9e9e9;
+}
+
+/* Grid del catálogo */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1.2rem;
+}
+
+/* Tarjeta */
+.card {
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 16px;
+  padding: 1rem;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.04);
+  cursor: pointer;
+  text-align: center;
+}
+
+/* Miniatura cuadrada */
+.thumb {
+  width: 100%;
+  max-width: 180px;
+  aspect-ratio: 1 / 1;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #f3f4f6;
+  border: 1px solid #eee;
+  margin: 0 auto 0.8rem;
+  
+}
+.thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Nombre de la botella */
+.bottleName {
+  font-size: 1.05rem;
+  color: #000a77;
+  margin: 0;
+}
+
+.error {
+  color: #dc2626;
+  font-weight: 600;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .searchInput {
+    width: 100%;
+  }
+}

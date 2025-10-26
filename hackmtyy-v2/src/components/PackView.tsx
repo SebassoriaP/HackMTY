@@ -1,9 +1,10 @@
-import { useState, useEffect, useCallback } from "react";
-import AICamera from "./AICamera";
+import { useState, useEffect, useCallback, useRef } from "react";
+import CameraPreview from "./CameraPreview";
 import QRScanner from "./QRScanner";
 import { getCarritoByQRId } from "../services/carritosCatering";
 import { Project } from "../types/carritosCatering";
-import { Detection } from "../hooks/useYOLODetection";
+import { generatePackMotivation, playMotivationalAudio } from "../services/motivationService";
+import { cleanupAudio } from "../utils/audioCleanup";
 
 // Tipos para los productos
 interface Product {
@@ -26,6 +27,98 @@ const PackView = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [carritoInfo, setCarritoInfo] = useState<Project | null>(null);
+
+  // 💪 Estado para motivación
+  const [motivationText, setMotivationText] = useState<string | null>(null);
+  const [motivationLoading, setMotivationLoading] = useState<boolean>(false);
+  const motivationAudioRef = useRef<HTMLAudioElement | null>(null);
+  const motivationIntervalRef = useRef<number | null>(null);
+  const isMountedRef = useRef<boolean>(true);
+
+  // 💪 Generar motivación al ingresar al componente y luego cada 10 segundos
+  useEffect(() => {
+    isMountedRef.current = true;
+    
+    // Función para generar una nueva motivación
+    const generateNewMotivation = async () => {
+      if (!isMountedRef.current) {
+        console.log("🛑 [PackView] Componente desmontado, cancelando generación de motivación");
+        return;
+      }
+      
+      console.log("✨ [PackView] Generando nueva motivación...");
+      setMotivationLoading(true);
+      
+      try {
+        const motivation = await generatePackMotivation();
+        
+        // Verificar si el componente sigue montado
+        if (!isMountedRef.current) {
+          console.log("🛑 [PackView] Componente desmontado antes de aplicar motivación");
+          return;
+        }
+        
+        console.log("📝 [PackView] Motivación recibida:", motivation);
+        
+        if (motivation) {
+          setMotivationText(motivation.text);
+          console.log("💬 [PackView] Texto de motivación establecido:", motivation.text);
+          
+          // Detener y limpiar audio anterior completamente si existe
+          if (motivationAudioRef.current) {
+            console.log("🔇 [PackView] Deteniendo audio anterior antes de reproducir nuevo");
+            cleanupAudio(motivationAudioRef.current);
+            motivationAudioRef.current = null;
+          }
+          
+          if (motivation.audioUrl && isMountedRef.current) {
+            motivationAudioRef.current = playMotivationalAudio(motivation.audioUrl);
+            console.log("🎵 [PackView] Audio reproduciéndose");
+          }
+        } else {
+          console.error("❌ [PackView] No se recibió motivación");
+        }
+      } catch (error) {
+        console.error("❌ [PackView] Error al generar motivación:", error);
+      } finally {
+        if (isMountedRef.current) {
+          setMotivationLoading(false);
+        }
+      }
+    };
+
+    // Generar inmediatamente la primera motivación al ingresar al componente
+    console.log("🚀 [PackView] Componente montado - Iniciando sistema de motivación");
+    generateNewMotivation();
+
+    // Configurar intervalo para generar cada 10 segundos
+    motivationIntervalRef.current = window.setInterval(() => {
+      console.log("⏰ [PackView] 10 segundos transcurridos, generando nueva motivación...");
+      generateNewMotivation();
+    }, 10000); // 10 segundos
+
+    // Cleanup: detener audio y limpiar intervalo al desmontar
+    return () => {
+      console.log("🛑🛑🛑 [PackView] DESMONTANDO COMPONENTE - DETENIENDO TODO 🛑🛑🛑");
+      isMountedRef.current = false;
+      
+      // Limpiar intervalo primero
+      if (motivationIntervalRef.current) {
+        console.log("⏹️ [PackView] Limpiando intervalo de motivación");
+        clearInterval(motivationIntervalRef.current);
+        motivationIntervalRef.current = null;
+      }
+      
+      // Detener y limpiar audio completamente
+      if (motivationAudioRef.current) {
+        console.log("🔇 [PackView] Deteniendo audio de motivación");
+        cleanupAudio(motivationAudioRef.current);
+        motivationAudioRef.current = null;
+      }
+      
+      console.log("✅ [PackView] Cleanup completado - Todo detenido");
+    };
+  }, []); // Se ejecuta solo al montar el componente
 
   // Iniciar escaneo de QR
   const handleStartScan = () => {
@@ -171,12 +264,19 @@ const PackView = () => {
     setQrCode("");
     setProducts([]);
     setTrolleyLoaded(false);
+    setMotivationText(null);
+    
+    // Limpiar audio completamente
+    if (motivationAudioRef.current) {
+      cleanupAudio(motivationAudioRef.current);
+      motivationAudioRef.current = null;
+    }
   };
 
   return (
     <div className="pack-view">
       <div className="pack-view__header">
-        <h2>🤖 Empaque Inteligente con IA</h2>
+        <h2>Empaque Inteligente con IA</h2>
         {loading && (
           <span className="status status--info">Buscando carrito en Firebase...</span>
         )}
@@ -186,7 +286,7 @@ const PackView = () => {
       {error && (
         <div className="pack-view__content">
           <div className="status status--error" style={{ width: "100%", textAlign: "center", padding: "16px" }}>
-            ⚠️ {error}
+            {error}
           </div>
           <button 
             className="secondary-button" 
@@ -196,7 +296,7 @@ const PackView = () => {
             }}
             style={{ width: "100%", marginTop: "16px" }}
           >
-            🔄 Intentar de nuevo
+            Intentar de nuevo
           </button>
         </div>
       )}
@@ -205,20 +305,21 @@ const PackView = () => {
       {!trolleyLoaded && !loading && !showScanner ? (
         <div className="pack-view__content">
           <section className="pack-view__info">
-            <h3>📱 Escanea el código QR del carrito</h3>
+            <h3>Escanea el código QR del carrito</h3>
             <p>
               Usa la cámara para escanear el código QR único del carrito. 
               El sistema buscará automáticamente el carrito en Firebase y cargará la lista de productos.
             </p>
             
             <div style={{ 
-              background: "#e7f3ff", 
+              background: "rgba(157, 78, 221, 0.08)", 
               padding: "16px", 
               borderRadius: "12px",
-              marginTop: "16px"
+              marginTop: "16px",
+              border: "2px solid rgba(157, 78, 221, 0.2)"
             }}>
-              <p style={{ margin: 0, fontSize: "0.9rem" }}>
-                💡 <strong>Cómo funciona:</strong>
+              <p style={{ margin: 0, fontSize: "0.9rem", fontWeight: "700", color: "#3c0059" }}>
+                Cómo funciona:
               </p>
               <ol style={{ marginTop: "8px", paddingLeft: "20px", fontSize: "0.9rem" }}>
                 <li>Presiona "Iniciar Escaneo QR"</li>
@@ -233,7 +334,7 @@ const PackView = () => {
               onClick={handleStartScan}
               style={{ width: "100%", marginTop: "16px" }}
             >
-              📷 Iniciar Escaneo QR
+              Iniciar Escaneo QR
             </button>
           </section>
         </div>
@@ -253,7 +354,7 @@ const PackView = () => {
             flexDirection: "column",
             alignItems: "center"
           }}>
-            <h3 style={{ marginBottom: 16 }}>📷 Escaneo de Código QR</h3>
+            <h3 style={{ marginBottom: 16 }}>Escaneo de Código QR</h3>
             <div style={{ width: "100%", maxWidth: 320, margin: "0 auto 16px auto" }}>
               <QRScanner 
                 onScanSuccess={handleQRSuccess}
@@ -265,7 +366,7 @@ const PackView = () => {
               onClick={() => setShowScanner(false)}
               style={{ width: "100%", marginTop: "16px" }}
             >
-              ❌ Cancelar escaneo
+              Cancelar escaneo
             </button>
           </section>
         </div>
@@ -277,7 +378,7 @@ const PackView = () => {
         <div className="pack-view__content">
           {/* Info del trolley escaneado */}
           <section className="pack-view__info">
-            <h3>✅ Carrito QR: {qrCode}</h3>
+            <h3>Carrito QR: {qrCode}</h3>
             {carritoInfo && (
               <div style={{ fontSize: "0.9rem", marginBottom: "12px" }}>
                 <p style={{ margin: "4px 0" }}>
@@ -294,6 +395,19 @@ const PackView = () => {
                 </p>
               </div>
             )}
+            
+            {/* Mensaje Motivacional */}
+            {motivationText && (
+              <div className="status status--success" style={{ marginTop: "12px", marginBottom: "12px", fontSize: "1rem", padding: "16px" }}>
+                <strong>{motivationText}</strong>
+              </div>
+            )}
+            {motivationLoading && (
+              <div className="status status--info" style={{ marginTop: "12px", marginBottom: "12px" }}>
+                Generando mensaje motivacional...
+              </div>
+            )}
+            
             <p>
               La IA está monitoreando la estación de trabajo. 
               Coloca los productos en el área visible de la cámara.
@@ -307,28 +421,22 @@ const PackView = () => {
           <div className="pack-view__workspace">
             {/* Cámara con IA en tiempo real */}
             <div className="pack-view__camera">
-              <h3 style={{ marginTop: 0, marginBottom: 16 }}>🎥 Cámara con IA - Detección en Tiempo Real</h3>
-              <AICamera 
-                onDetectionUpdate={handleDetectionUpdate}
-                showBoundingBoxes={true}
-                showWarnings={true}
-                fps={5}
-              />
+              <CameraPreview title="Cámara con IA - Detección Automática" />
               <div style={{
-                background: "#e7f3ff",
+                background: "rgba(157, 78, 221, 0.08)",
                 padding: "12px",
                 borderRadius: "8px",
                 fontSize: "0.9rem",
-                marginTop: "16px"
+                marginTop: "8px",
+                border: "2px solid rgba(157, 78, 221, 0.2)"
               }}>
-                💡 <strong>YOLO en vivo:</strong> El modelo detecta objetos automáticamente. 
-                Los productos coincidentes se marcarán como detectados.
+                <strong>Simulación:</strong> La IA detecta productos automáticamente cada 3 segundos
               </div>
             </div>
 
             {/* Lista de productos */}
             <div className="pack-checklist">
-              <h3 style={{ marginTop: 0 }}>📋 Lista de Productos</h3>
+              <h3 style={{ marginTop: 0 }}>Lista de Productos</h3>
               <div className="pack-checklist__table">
                 <div className="pack-checklist__header">
                   <span>Producto</span>
@@ -338,7 +446,7 @@ const PackView = () => {
                 {products.map((product) => (
                   <div key={product.id} className="pack-checklist__row">
                     <span style={{ fontWeight: product.detected ? "600" : "normal" }}>
-                      {product.detected && "✅ "}
+                      {product.detected && "✓ "}
                       {product.name}
                     </span>
                     <span>{product.quantity}</span>
@@ -358,7 +466,7 @@ const PackView = () => {
           {/* Mensaje de completado */}
           {isComplete && (
             <div className="pack-view__done">
-              🎉 TROLLEY COMPLETO - TODOS LOS PRODUCTOS DETECTADOS ✅
+              TROLLEY COMPLETO - TODOS LOS PRODUCTOS DETECTADOS
             </div>
           )}
 
@@ -368,7 +476,7 @@ const PackView = () => {
             onClick={handleReset}
             style={{ width: "100%", marginTop: "16px" }}
           >
-            🔄 Escanear otro trolley
+            Escanear otro trolley
           </button>
         </div>
       ) : null}

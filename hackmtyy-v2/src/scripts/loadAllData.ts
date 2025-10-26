@@ -14,8 +14,8 @@ async function loadAllDataToFirebase() {
     
     await initializeFirebaseData();
     
-    console.log('\n✅ ¡Todos los datos han sido cargados exitosamente a Firebase!');
-    console.log('📊 Puedes verificar los datos en la consola de Firebase Firestore');
+    console.log('\n ¡Todos los datos han sido cargados exitosamente a Firebase!');
+    console.log(' Puedes verificar los datos en la consola de Firebase Firestore');
     
   } catch (error) {
     console.error('❌ Error al cargar datos:', error);

@@ -48,11 +48,11 @@ const App = () => {
   return (
     <div className="app">
       <header className="app__header">
-        <h1>Centro de Catering Aéreo</h1>
+        <h1>Centro de Catering Meraki</h1>
         <p>
           {tieneAlcohol && currentView === "bottle-handling" 
-            ? "🍾 Procesamiento de Alcohol → Pick & Pack" 
-            : "📦 Sistema Pick & Pack"}
+            ? "Procesamiento de Alcohol → Pick & Pack" 
+            : "Sistema Pick & Pack"}
         </p>
       </header>
       <main className="app__main">
@@ -70,16 +70,6 @@ const App = () => {
         {/* Pick/Pack: HOME - Vista principal */}
         {currentView === "pick-pack" && (
           <>
-            {/* Botón de acceso a Dashboard (pequeño, esquina) */}
-            <div style={{ textAlign: 'right', marginBottom: '10px' }}>
-              <button 
-                onClick={() => setCurrentView("dashboard")}
-                className="secondary-button"
-                style={{ fontSize: '12px', padding: '5px 10px' }}
-              >
-                ⚙️ Dashboard / Configuración
-              </button>
-            </div>
 
             <RoleSelector />
             
@@ -93,13 +83,12 @@ const App = () => {
                 Selecciona si trabajarás como PICK o PACK para continuar.
               </div>
             )}
-            {selectedFlight && role === "PICK" && <PickView />}
-            {selectedFlight && role === "PACK" && <PackView />}
+            {selectedFlight && role === "PICK" && <PickView key="pick-view" />}
+            {selectedFlight && role === "PACK" && <PackView key="pack-view" />}
           </>
         )}
       </main>
       <footer className="app__footer">
-        Sistema conectado a Firebase Firestore - Datos en tiempo real
       </footer>
     </div>
   );

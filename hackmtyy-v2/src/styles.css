@@ -1,0 +1,507 @@
+:root {
+  font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  line-height: 1.4;
+  color: #0b2739;
+  background-color: #f3f6f9;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+.app {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.app__header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.app__header h1 {
+  margin: 0;
+  font-size: 2rem;
+  color: #0b3d62;
+}
+
+.app__header p {
+  margin: 8px 0 0;
+  color: #3d6078;
+}
+
+.app__main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.app__footer {
+  text-align: center;
+  font-size: 0.85rem;
+  color: #5e8099;
+  margin-top: 16px;
+}
+
+.app__placeholder {
+  padding: 16px;
+  background: #ffffff;
+  border: 1px dashed #c7d7e4;
+  border-radius: 12px;
+  text-align: center;
+  color: #4b6a82;
+}
+
+.flight-search {
+  background: #ffffff;
+  padding: 16px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.flight-search__form {
+  display: flex;
+  gap: 12px;
+}
+
+.flight-search__input {
+  flex: 1;
+  font-size: 1.1rem;
+  padding: 12px 16px;
+  border-radius: 10px;
+  border: 1px solid #b6c7d8;
+}
+
+.flight-search__input:focus {
+  outline: 2px solid #0b8fd8;
+  border-color: #0b8fd8;
+}
+
+.flight-search__status {
+  min-height: 20px;
+}
+
+.role-selector {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.role-button {
+  flex: 1;
+  padding: 16px;
+  font-size: 1.3rem;
+  font-weight: 600;
+  border-radius: 12px;
+  border: 2px solid #0b8fd8;
+  color: #0b8fd8;
+  background: #ffffff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.role-button--active {
+  background: #0b8fd8;
+  color: #ffffff;
+}
+
+.role-button--disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.primary-button {
+  background: #0b8fd8;
+  color: #ffffff;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.primary-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.secondary-button {
+  background: #e6eff7;
+  color: #0b2739;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.status {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.status--error {
+  background: #fdeaea;
+  color: #b3261e;
+}
+
+.status--success {
+  background: #e3f7e7;
+  color: #177245;
+}
+
+.status--info {
+  background: #e7f3ff;
+  color: #0b3d62;
+}
+
+.pick-view {
+  display: flex;
+  gap: 16px;
+  align-items: stretch;
+}
+
+.pick-view__camera,
+.pack-view__camera {
+  background: #ffffff;
+  padding: 16px;
+  border-radius: 12px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.pick-view__details {
+  flex: 2;
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.pick-view__hint {
+  margin: 0;
+  color: #4b6a82;
+}
+
+.trolley-selector {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.trolley-selector__button {
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid #c7d7e4;
+  background: #eef4fa;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.trolley-selector__button--active {
+  background: #0b8fd8;
+  color: #ffffff;
+  border-color: #0b8fd8;
+}
+
+.picker-scan {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.picker-scan__label {
+  font-weight: 600;
+}
+
+.picker-scan__input-group {
+  display: flex;
+  gap: 8px;
+}
+
+.picker-scan__input {
+  flex: 1;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid #b6c7d8;
+}
+
+.pick-view__trolleys {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 12px;
+}
+
+.trolley-card {
+  border: 1px solid #dde6ef;
+  border-radius: 12px;
+  padding: 16px;
+  background: #f9fcff;
+}
+
+.trolley-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.trolley-card__mesa {
+  font-size: 0.95rem;
+  color: #0b3d62;
+  font-weight: 600;
+}
+
+.item-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 0;
+  border-bottom: 1px dashed #dde6ef;
+}
+
+.item-row:last-child {
+  border-bottom: none;
+}
+
+.item-row__name {
+  font-weight: 600;
+}
+
+.item-row__qty {
+  color: #37546c;
+}
+
+.item-row__status {
+  font-size: 0.95rem;
+}
+
+.camera-preview__title {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.camera-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.camera-preview__video {
+  width: 100%;
+  border-radius: 12px;
+  background: #0b2739;
+  min-height: 220px;
+}
+
+.camera-preview__error {
+  padding: 12px;
+  border-radius: 12px;
+  background: #fdeaea;
+  color: #b3261e;
+}
+
+.camera-preview__viewport {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.camera-preview__loading,
+.camera-preview__warning {
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.camera-preview__loading {
+  background: #e7f3ff;
+  color: #0b3d62;
+}
+
+.camera-preview__warning {
+  background: #fff4d6;
+  color: #5f4305;
+}
+
+.pack-view {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.pack-view__header {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  justify-content: space-between;
+  background: #ffffff;
+  padding: 16px;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.pack-view__selector select {
+  margin-left: 8px;
+  padding: 10px;
+  font-weight: 600;
+  border-radius: 8px;
+  border: 1px solid #b6c7d8;
+}
+
+.pack-view__empty {
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 12px;
+  text-align: center;
+  color: #4b6a82;
+}
+
+.pack-view__content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.pack-view__info {
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.pack-view__workspace {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.pack-checklist {
+  flex: 1;
+  background: #ffffff;
+  padding: 16px;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.pack-checklist__table {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pack-checklist__header,
+.pack-checklist__row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 8px;
+  align-items: center;
+}
+
+.pack-checklist__header {
+  font-weight: 700;
+  color: #0b3d62;
+}
+
+.pack-checklist__row {
+  padding: 8px 0;
+  border-bottom: 1px dashed #dde6ef;
+}
+
+.pack-checklist__row:last-child {
+  border-bottom: none;
+}
+
+.pack-checklist__actions {
+  display: flex;
+  gap: 8px;
+}
+
+.pack-view__done {
+  background: #e3f7e7;
+  color: #177245;
+  padding: 16px;
+  text-align: center;
+  font-size: 1.2rem;
+  font-weight: 700;
+  border-radius: 12px;
+}
+
+.alcohol-decision {
+  border: 2px solid #f0c24d;
+  background: #fff9e6;
+  padding: 16px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.alcohol-decision__hint {
+  margin: 0;
+  color: #7a5b10;
+}
+
+.alcohol-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-bottom: 12px;
+  border-bottom: 1px dashed #f0c24d;
+}
+
+.alcohol-item:last-child {
+  border-bottom: none;
+}
+
+.alcohol-item__options {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.alcohol-item__option {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  font-weight: 600;
+  background: #ffeab0;
+  padding: 6px 10px;
+  border-radius: 8px;
+}
+
+@media (max-width: 960px) {
+  .pick-view {
+    flex-direction: column;
+  }
+
+  .pack-view__workspace {
+    flex-direction: column;
+  }
+}

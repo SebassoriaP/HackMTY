@@ -1,11 +1,15 @@
 import fs from "fs";
 import process from "node:process";
 import axios from "axios";
+import dotenv from "dotenv";
 
-// --- 🔑 TUS CLAVES DIRECTAS ---
-const OPENROUTER_API_KEY = "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";
-const ELEVENLABS_API_KEY = "sk_830a945e429d51462bf7e79649fa6bde4633e158e65814fa";
-const ELEVENLABS_VOICE_ID = "zA6D7RyKdc2EClouEMkP";
+// Cargar variables de entorno
+dotenv.config();
+
+// --- 🔑 OBTENER CLAVES DESDE .ENV ---
+const OPENROUTER_API_KEY = process.env.VITE_OPENROUTER_API_KEY;
+const ELEVENLABS_API_KEY = process.env.VITE_ELEVENLABS_API_KEY;
+const ELEVENLABS_VOICE_ID = process.env.VITE_ELEVENLABS_VOICE_ID;
 
 // --- SOLICITUD A GEMINI (VÍA OPENROUTER) ---
 const payload = {
@@ -13,7 +17,7 @@ const payload = {
   messages: [
     {
       role: "user",
-      content: "Genera una frase motivadora corta, sin texto adicional. Solo la frase.",
+      content: "Genera una frase motivadora corta mexicana, sin texto adicional. Solo la frase.",
     },
   ],
 };

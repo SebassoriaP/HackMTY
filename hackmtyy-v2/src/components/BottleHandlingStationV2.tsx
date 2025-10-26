@@ -268,36 +268,6 @@ ${resultados.map(r => `
 
     // Mostrar en consola
     console.log('\n' + reporte + '\n');
-
-    // Mostrar alerta visual (opcional)
-    if (ahorroBotellas > 0) {
-      alert(`✅ PROCESAMIENTO COMPLETADO
-
-Pedido: ${pedidoActual.idPedido}
-Aerolínea: ${aerolinea.nombre} (${aerolinea.codigo})
-
-RESUMEN:
-• Total necesario: ${totalOriginal} botellas
-• Reutilizadas: ${totalReutilizado}
-• Rellenadas: ${totalRellenado}
-• Desechadas: ${totalDesechado}
-• A COMPRAR: ${totalComprar}
-
-💰 AHORRO: ${ahorroBotellas} botellas (${porcentajeAhorro}%)
-
-✅ Pick list actualizada automáticamente.
-Ver consola para detalles completos.`);
-    } else {
-      alert(`📋 PROCESAMIENTO COMPLETADO
-
-Pedido: ${pedidoActual.idPedido}
-Aerolínea: ${aerolinea.nombre} (${aerolinea.codigo})
-
-ℹ️ No había alcohol almacenado disponible.
-Se comprará todo del inventario: ${totalComprar} botellas
-
-✅ Pick list actualizada.`);
-    }
   };
 
   const procesarBotella = async (
@@ -496,72 +466,232 @@ Se comprará todo del inventario: ${totalComprar} botellas
 
   if (loading) {
     return (
-      <div className="bottle-handling-station">
-        <h2>🍾 Bottle Handling (V2 Interactivo)</h2>
-        <p>Cargando...</p>
+      <div className="bottle-handling-station" style={{
+        minHeight: '100vh',
+        background: 'linear-gradient(135deg, #1a0026 0%, #3c0059 50%, #1a0026 100%)',
+        padding: '40px',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}>
+        <div style={{
+          background: 'rgba(255, 255, 255, 0.95)',
+          borderRadius: '16px',
+          padding: '40px',
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
+          textAlign: 'center'
+        }}>
+          <h2 style={{ color: '#3c0059', marginBottom: '20px' }}>■ Bottle Handling Station</h2>
+          <div className="spinner" style={{
+            width: '50px',
+            height: '50px',
+            border: '4px solid #f3e5ff',
+            borderTop: '4px solid #9d4edd',
+            borderRadius: '50%',
+            animation: 'spin 1s linear infinite',
+            margin: '0 auto'
+          }}></div>
+          <p style={{ marginTop: '20px', color: '#666' }}>Cargando sistema...</p>
+        </div>
       </div>
     );
   }
 
   if (paso === 'inicial') {
     return (
-      <div className="bottle-handling-station">
-        <h2>🍾 Bottle Handling (V2 Interactivo)</h2>
-        {mensaje ? (
-          <div className="alert info">{mensaje}</div>
-        ) : (
-          <p>Seleccione un pedido desde el Dashboard.</p>
-        )}
+      <div className="bottle-handling-station" style={{
+        minHeight: '100vh',
+        background: 'linear-gradient(135deg, #1a0026 0%, #3c0059 50%, #1a0026 100%)',
+        padding: '40px'
+      }}>
+        <div style={{
+          maxWidth: '800px',
+          margin: '0 auto',
+          background: 'rgba(255, 255, 255, 0.95)',
+          borderRadius: '16px',
+          padding: '40px',
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)'
+        }}>
+          <h2 style={{ color: '#3c0059', marginBottom: '30px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <span style={{ fontSize: '32px' }}>■</span> Bottle Handling Station
+          </h2>
+          {mensaje ? (
+            <div style={{
+              background: 'rgba(157, 78, 221, 0.1)',
+              border: '2px solid #9d4edd',
+              borderRadius: '8px',
+              padding: '20px',
+              color: '#3c0059',
+              fontSize: '16px'
+            }}>
+              {mensaje}
+            </div>
+          ) : (
+            <p style={{ color: '#666', fontSize: '16px' }}>Seleccione un pedido desde el Dashboard para comenzar.</p>
+          )}
+        </div>
       </div>
     );
   }
 
   if (paso === 'pregunta') {
     return (
-      <div className="bottle-handling-station">
-        <h2>🍾 Bottle Handling (V2 Interactivo)</h2>
-        
-        <div className="pedido-info">
-          <h3>📦 Pedido: {pedidoActual?.idPedido}</h3>
-          <p>✈️ Aerolínea: {aerolinea?.nombre}</p>
-          <p>🛫 Vuelo: {pedidoActual?.vuelo}</p>
-        </div>
+      <div className="bottle-handling-station" style={{
+        minHeight: '100vh',
+        background: 'linear-gradient(135deg, #1a0026 0%, #3c0059 50%, #1a0026 100%)',
+        padding: '40px'
+      }}>
+        <div style={{
+          maxWidth: '900px',
+          margin: '0 auto',
+          background: 'rgba(255, 255, 255, 0.95)',
+          borderRadius: '16px',
+          padding: '40px',
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)'
+        }}>
+          <h2 style={{ 
+            color: '#3c0059', 
+            marginBottom: '30px', 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: '10px',
+            fontSize: '28px'
+          }}>
+            <span style={{ fontSize: '32px' }}>■</span> Bottle Handling Station
+          </h2>
+          
+          <div style={{
+            background: 'linear-gradient(135deg, #9d4edd 0%, #7b2cbf 100%)',
+            borderRadius: '12px',
+            padding: '25px',
+            marginBottom: '30px',
+            color: 'white'
+          }}>
+            <h3 style={{ margin: '0 0 15px 0', fontSize: '20px' }}>
+              ▸ Pedido: {pedidoActual?.idPedido}
+            </h3>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', fontSize: '15px' }}>
+              <div>■ Aerolínea: {aerolinea?.nombre}</div>
+              <div>■ Vuelo: {pedidoActual?.vuelo}</div>
+              <div>■ Ruta: {pedidoActual?.origen} → {pedidoActual?.destino}</div>
+              <div>■ Productos alcohólicos: {productosConAlcohol.length}</div>
+            </div>
+          </div>
 
-        <div className="alert warning">
-          <p><strong>{productosConAlcohol.length} producto(s) alcohólico(s):</strong></p>
-          <ul>
-            {productosConAlcohol.map(p => (
-              <li key={p.idProducto}>
-                {p.nombre} - Cantidad: {
-                  pedidoActual?.items.find(i => i.productoId === p.idProducto)?.cantidad || 0
-                }
-              </li>
-            ))}
-          </ul>
-        </div>
+          <div style={{
+            background: 'rgba(157, 78, 221, 0.08)',
+            border: '2px solid #9d4edd',
+            borderRadius: '12px',
+            padding: '25px',
+            marginBottom: '30px'
+          }}>
+            <p style={{ fontSize: '16px', fontWeight: 'bold', color: '#3c0059', marginBottom: '15px' }}>
+              Productos detectados:
+            </p>
+            <div style={{ display: 'grid', gap: '10px' }}>
+              {productosConAlcohol.map(p => (
+                <div key={p.idProducto} style={{
+                  background: 'white',
+                  padding: '15px',
+                  borderRadius: '8px',
+                  border: '1px solid #e0e0e0',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center'
+                }}>
+                  <span style={{ color: '#333', fontWeight: '500' }}>{p.nombre}</span>
+                  <span style={{
+                    background: 'linear-gradient(135deg, #9d4edd 0%, #7b2cbf 100%)',
+                    color: 'white',
+                    padding: '6px 16px',
+                    borderRadius: '20px',
+                    fontSize: '14px',
+                    fontWeight: 'bold'
+                  }}>
+                    Cantidad: {pedidoActual?.items.find(i => i.productoId === p.idProducto)?.cantidad || 0}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
 
-        <div className="pregunta-principal">
-          <h3>❓ ¿Hay alcohol remanente del CARRITO DE CATERING del vuelo anterior?</h3>
-          <p style={{ fontSize: '14px', color: '#666', marginTop: '10px' }}>
-            Esta pregunta se refiere a las botellas que quedan en el carrito de catering después del último vuelo.
-            <br />
-            Si responde SÍ, se pesarán las botellas para determinar si se reutilizan, rellenan o desechan.
-          </p>
-          <div className="botones-respuesta">
-            <button 
-              className="btn btn-success"
-              onClick={() => responderHayAlcoholAnterior(true)}
-              disabled={cargando}
-            >
-              ✓ SÍ, hay botellas en el carrito
-            </button>
-            <button 
-              className="btn btn-secondary"
-              onClick={() => responderHayAlcoholAnterior(false)}
-              disabled={cargando}
-            >
-              ✗ NO, el carrito está vacío
-            </button>
+          <div style={{
+            background: 'linear-gradient(135deg, #f3e5ff 0%, #e0d1f5 100%)',
+            borderRadius: '12px',
+            padding: '30px',
+            marginBottom: '30px',
+            textAlign: 'center'
+          }}>
+            <h3 style={{ color: '#3c0059', fontSize: '22px', marginBottom: '15px' }}>
+              ¿Hay alcohol remanente del carrito de catering del vuelo anterior?
+            </h3>
+            <p style={{ fontSize: '14px', color: '#666', marginBottom: '25px', lineHeight: '1.6' }}>
+              Esta pregunta se refiere a las botellas que quedan en el carrito de catering después del último vuelo.<br />
+              Si responde SÍ, se pesarán las botellas para determinar si se reutilizan, rellenan o desechan.
+            </p>
+            <div style={{ display: 'flex', gap: '20px', justifyContent: 'center' }}>
+              <button 
+                className="btn btn-success"
+                onClick={() => responderHayAlcoholAnterior(true)}
+                disabled={cargando}
+                style={{
+                  background: 'linear-gradient(135deg, #4caf50 0%, #45a049 100%)',
+                  color: 'white',
+                  border: 'none',
+                  padding: '15px 40px',
+                  borderRadius: '8px',
+                  fontSize: '16px',
+                  fontWeight: 'bold',
+                  cursor: cargando ? 'not-allowed' : 'pointer',
+                  boxShadow: '0 4px 12px rgba(76, 175, 80, 0.3)',
+                  transition: 'transform 0.2s, boxShadow 0.2s',
+                  opacity: cargando ? 0.6 : 1
+                }}
+                onMouseEnter={(e) => {
+                  if (!cargando) {
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                    e.currentTarget.style.boxShadow = '0 6px 16px rgba(76, 175, 80, 0.4)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(76, 175, 80, 0.3)';
+                }}
+              >
+                ✓ SÍ, hay botellas en el carrito
+              </button>
+              <button 
+                className="btn btn-secondary"
+                onClick={() => responderHayAlcoholAnterior(false)}
+                disabled={cargando}
+                style={{
+                  background: 'linear-gradient(135deg, #757575 0%, #616161 100%)',
+                  color: 'white',
+                  border: 'none',
+                  padding: '15px 40px',
+                  borderRadius: '8px',
+                  fontSize: '16px',
+                  fontWeight: 'bold',
+                  cursor: cargando ? 'not-allowed' : 'pointer',
+                  boxShadow: '0 4px 12px rgba(117, 117, 117, 0.3)',
+                  transition: 'transform 0.2s, boxShadow 0.2s',
+                  opacity: cargando ? 0.6 : 1
+                }}
+                onMouseEnter={(e) => {
+                  if (!cargando) {
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                    e.currentTarget.style.boxShadow = '0 6px 16px rgba(117, 117, 117, 0.4)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(117, 117, 117, 0.3)';
+                }}
+              >
+                ✗ NO, el carrito está vacío
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -587,169 +717,317 @@ Se comprará todo del inventario: ${totalComprar} botellas
     };
 
     return (
-      <div className="bottle-handling-station">
-        <h2>⚖️  Báscula de Botellas</h2>
-        
-        <div className="alert info">
-          <p><strong>Pesando botellas del carrito del vuelo {botellaActual?.vueloOrigen}</strong></p>
-          <p>Progreso: {botellaPesandoIndex + 1} de {totalBotellas} botellas</p>
-        </div>
-
-        {botellaActual && (
-          <div className="bascula-container" style={{
-            border: '3px solid #1976d2',
-            borderRadius: '12px',
-            padding: '30px',
-            margin: '20px 0',
-            background: 'linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%)',
-            boxShadow: '0 8px 16px rgba(0,0,0,0.2)'
+      <div className="bottle-handling-station" style={{
+        minHeight: '100vh',
+        background: 'linear-gradient(135deg, #1a0026 0%, #3c0059 50%, #1a0026 100%)',
+        padding: '40px'
+      }}>
+        <div style={{
+          maxWidth: '1000px',
+          margin: '0 auto'
+        }}>
+          <h2 style={{ 
+            color: 'white', 
+            marginBottom: '30px', 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: '10px',
+            fontSize: '28px'
           }}>
-            {/* Pantalla Digital de la Báscula */}
-            <div className="bascula-display" style={{
-              background: '#000',
-              color: '#0f0',
+            <span style={{ fontSize: '32px' }}>■</span> Báscula de Botellas
+          </h2>
+          
+          <div style={{
+            background: 'rgba(255, 255, 255, 0.95)',
+            borderRadius: '16px',
+            padding: '30px',
+            marginBottom: '20px',
+            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)'
+          }}>
+            <div style={{
+              background: 'linear-gradient(135deg, #9d4edd 0%, #7b2cbf 100%)',
+              borderRadius: '12px',
               padding: '20px',
-              borderRadius: '8px',
-              fontFamily: 'monospace',
-              fontSize: '24px',
-              textAlign: 'center',
-              marginBottom: '20px',
-              border: '2px solid #333'
-            }}>
-              <div style={{ fontSize: '14px', color: '#0f0', marginBottom: '10px' }}>
-                ━━━━ BÁSCULA DIGITAL ━━━━
-              </div>
-              <div style={{ fontSize: '36px', fontWeight: 'bold', color: '#0f0' }}>
-                {botellaActual.pesoActual_ml} ml
-              </div>
-              <div style={{ fontSize: '16px', color: '#0f0', marginTop: '5px' }}>
-                ({botellaActual.nivelLlenado}% del original)
-              </div>
-            </div>
-
-            {/* Información de la Botella */}
-            <div className="botella-info" style={{
-              background: '#fff',
-              padding: '20px',
-              borderRadius: '8px',
-              marginBottom: '20px'
-            }}>
-              <h3 style={{ marginTop: 0, color: '#1976d2' }}>
-                📍 {botellaActual.posicionCarrito}
-              </h3>
-              <h4>{botellaActual.nombreProducto}</h4>
-              
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginTop: '15px' }}>
-                <div>
-                  <strong>Peso Original:</strong><br />
-                  {botellaActual.pesoOriginal_ml} ml
-                </div>
-                <div>
-                  <strong>Peso Actual:</strong><br />
-                  <span style={{ color: porcentajePeso >= 90 ? '#4caf50' : porcentajePeso >= 60 ? '#ff9800' : '#f44336', fontWeight: 'bold' }}>
-                    {botellaActual.pesoActual_ml} ml
-                  </span>
-                </div>
-                <div>
-                  <strong>Estado Sello:</strong><br />
-                  <span style={{ color: botellaActual.estadoSello === 'sellado' ? '#4caf50' : '#f44336' }}>
-                    {botellaActual.estadoSello === 'sellado' ? '🔒 Sellado' : '🔓 Abierto'}
-                  </span>
-                </div>
-                <div>
-                  <strong>Limpieza:</strong><br />
-                  <span style={{ color: botellaActual.limpiezaScore >= 9 ? '#4caf50' : botellaActual.limpiezaScore >= 7 ? '#ff9800' : '#f44336' }}>
-                    {botellaActual.limpiezaScore}/10
-                  </span>
-                </div>
-                <div>
-                  <strong>Etiqueta:</strong><br />
-                  {botellaActual.estadoEtiqueta}
-                </div>
-                <div>
-                  <strong>Nivel de Llenado:</strong><br />
-                  <div style={{
-                    width: '100%',
-                    height: '20px',
-                    background: '#e0e0e0',
-                    borderRadius: '4px',
-                    overflow: 'hidden',
-                    marginTop: '5px'
-                  }}>
-                    <div style={{
-                      width: `${botellaActual.nivelLlenado}%`,
-                      height: '100%',
-                      background: porcentajePeso >= 90 ? '#4caf50' : porcentajePeso >= 60 ? '#ff9800' : '#f44336',
-                      transition: 'width 0.3s ease'
-                    }} />
-                  </div>
-                  <span style={{ fontSize: '12px' }}>{botellaActual.nivelLlenado}%</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Indicador Visual de Báscula */}
-            <div className="bascula-visual" style={{
+              marginBottom: '25px',
+              color: 'white',
               display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'flex-end',
-              height: '150px',
-              background: '#fff',
-              borderRadius: '8px',
-              padding: '20px',
-              position: 'relative'
+              justifyContent: 'space-between',
+              alignItems: 'center'
             }}>
+              <div>
+                <p style={{ margin: '0 0 5px 0', fontSize: '16px' }}>
+                  ▸ Pesando botellas del vuelo {botellaActual?.vueloOrigen}
+                </p>
+                <p style={{ margin: 0, fontSize: '20px', fontWeight: 'bold' }}>
+                  Progreso: {botellaPesandoIndex + 1} de {totalBotellas} botellas
+                </p>
+              </div>
               <div style={{
-                width: '100px',
-                height: `${porcentajePeso}%`,
-                background: `linear-gradient(to top, ${porcentajePeso >= 90 ? '#4caf50' : porcentajePeso >= 60 ? '#ff9800' : '#f44336'}, transparent)`,
-                borderRadius: '8px 8px 0 0',
-                border: '2px solid #333',
-                position: 'relative',
-                transition: 'height 0.5s ease'
+                background: 'rgba(255, 255, 255, 0.2)',
+                borderRadius: '8px',
+                padding: '10px 20px',
+                fontSize: '24px',
+                fontWeight: 'bold'
               }}>
-                <div style={{
-                  position: 'absolute',
-                  top: '-30px',
-                  left: '50%',
-                  transform: 'translateX(-50%)',
-                  fontSize: '24px'
-                }}>
-                  🍾
-                </div>
+                {Math.round((botellaPesandoIndex + 1) / totalBotellas * 100)}%
               </div>
             </div>
+
+            {botellaActual && (
+              <div style={{
+                border: '3px solid #9d4edd',
+                borderRadius: '16px',
+                overflow: 'hidden',
+                background: 'white'
+              }}>
+                {/* Pantalla Digital de la Báscula */}
+                <div style={{
+                  background: '#000',
+                  color: '#0f0',
+                  padding: '30px',
+                  textAlign: 'center',
+                  fontFamily: 'monospace'
+                }}>
+                  <div style={{ fontSize: '14px', color: '#0f0', marginBottom: '15px', letterSpacing: '3px' }}>
+                    ━━━━ BÁSCULA DIGITAL ━━━━
+                  </div>
+                  <div style={{ fontSize: '48px', fontWeight: 'bold', color: '#0f0', marginBottom: '10px' }}>
+                    {botellaActual.pesoActual_ml} ml
+                  </div>
+                  <div style={{ fontSize: '18px', color: '#0f0' }}>
+                    ({botellaActual.nivelLlenado}% del original)
+                  </div>
+                </div>
+
+                {/* Información de la Botella */}
+                <div style={{ padding: '30px' }}>
+                  <div style={{
+                    background: 'linear-gradient(135deg, #f3e5ff 0%, #e0d1f5 100%)',
+                    borderRadius: '12px',
+                    padding: '20px',
+                    marginBottom: '25px'
+                  }}>
+                    <h3 style={{ margin: '0 0 10px 0', color: '#3c0059', fontSize: '24px' }}>
+                      {botellaActual.nombreProducto}
+                    </h3>
+                    <p style={{ margin: 0, color: '#666', fontSize: '16px' }}>
+                      ■ Posición: {botellaActual.posicionCarrito}
+                    </p>
+                  </div>
+                  
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px' }}>
+                    <div style={{
+                      background: '#f5f5f5',
+                      borderRadius: '8px',
+                      padding: '20px',
+                      border: '1px solid #e0e0e0'
+                    }}>
+                      <div style={{ fontSize: '13px', color: '#666', marginBottom: '8px' }}>Peso Original</div>
+                      <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#333' }}>
+                        {botellaActual.pesoOriginal_ml} ml
+                      </div>
+                    </div>
+                    <div style={{
+                      background: porcentajePeso >= 90 ? '#e8f5e9' : porcentajePeso >= 60 ? '#fff3e0' : '#ffebee',
+                      borderRadius: '8px',
+                      padding: '20px',
+                      border: `2px solid ${porcentajePeso >= 90 ? '#4caf50' : porcentajePeso >= 60 ? '#ff9800' : '#f44336'}`
+                    }}>
+                      <div style={{ fontSize: '13px', color: '#666', marginBottom: '8px' }}>Peso Actual</div>
+                      <div style={{ 
+                        fontSize: '24px', 
+                        fontWeight: 'bold', 
+                        color: porcentajePeso >= 90 ? '#4caf50' : porcentajePeso >= 60 ? '#ff9800' : '#f44336'
+                      }}>
+                        {botellaActual.pesoActual_ml} ml
+                      </div>
+                    </div>
+                    <div style={{
+                      background: '#f5f5f5',
+                      borderRadius: '8px',
+                      padding: '20px',
+                      border: '1px solid #e0e0e0'
+                    }}>
+                      <div style={{ fontSize: '13px', color: '#666', marginBottom: '8px' }}>Estado Sello</div>
+                      <div style={{ 
+                        fontSize: '20px', 
+                        fontWeight: 'bold',
+                        color: botellaActual.estadoSello === 'sellado' ? '#4caf50' : '#f44336'
+                      }}>
+                        {botellaActual.estadoSello === 'sellado' ? '■ Sellado' : '■ Abierto'}
+                      </div>
+                    </div>
+                    <div style={{
+                      background: '#f5f5f5',
+                      borderRadius: '8px',
+                      padding: '20px',
+                      border: '1px solid #e0e0e0'
+                    }}>
+                      <div style={{ fontSize: '13px', color: '#666', marginBottom: '8px' }}>Limpieza</div>
+                      <div style={{ 
+                        fontSize: '20px', 
+                        fontWeight: 'bold',
+                        color: botellaActual.limpiezaScore >= 9 ? '#4caf50' : botellaActual.limpiezaScore >= 7 ? '#ff9800' : '#f44336'
+                      }}>
+                        {botellaActual.limpiezaScore}/10
+                      </div>
+                    </div>
+                    <div style={{
+                      background: '#f5f5f5',
+                      borderRadius: '8px',
+                      padding: '20px',
+                      border: '1px solid #e0e0e0'
+                    }}>
+                      <div style={{ fontSize: '13px', color: '#666', marginBottom: '8px' }}>Etiqueta</div>
+                      <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#333', textTransform: 'capitalize' }}>
+                        {botellaActual.estadoEtiqueta}
+                      </div>
+                    </div>
+                    <div style={{
+                      background: '#f5f5f5',
+                      borderRadius: '8px',
+                      padding: '20px',
+                      border: '1px solid #e0e0e0'
+                    }}>
+                      <div style={{ fontSize: '13px', color: '#666', marginBottom: '8px' }}>Nivel de Llenado</div>
+                      <div style={{
+                        width: '100%',
+                        height: '24px',
+                        background: '#e0e0e0',
+                        borderRadius: '12px',
+                        overflow: 'hidden',
+                        marginTop: '8px',
+                        position: 'relative'
+                      }}>
+                        <div style={{
+                          width: `${botellaActual.nivelLlenado}%`,
+                          height: '100%',
+                          background: `linear-gradient(90deg, ${porcentajePeso >= 90 ? '#4caf50' : porcentajePeso >= 60 ? '#ff9800' : '#f44336'}, ${porcentajePeso >= 90 ? '#45a049' : porcentajePeso >= 60 ? '#f57c00' : '#d32f2f'})`,
+                          transition: 'width 0.5s ease',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          color: 'white',
+                          fontSize: '12px',
+                          fontWeight: 'bold'
+                        }}>
+                          {botellaActual.nivelLlenado}%
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
 
             <button 
-              className="btn btn-primary"
               onClick={continuarPesaje}
-              style={{ marginTop: '20px', width: '100%' }}
+              style={{
+                marginTop: '25px',
+                width: '100%',
+                background: 'linear-gradient(135deg, #9d4edd 0%, #7b2cbf 100%)',
+                color: 'white',
+                border: 'none',
+                padding: '18px',
+                borderRadius: '12px',
+                fontSize: '18px',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+                boxShadow: '0 4px 16px rgba(157, 78, 221, 0.4)',
+                transition: 'transform 0.2s, boxShadow 0.2s'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.boxShadow = '0 6px 20px rgba(157, 78, 221, 0.5)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '0 4px 16px rgba(157, 78, 221, 0.4)';
+              }}
             >
               {botellaPesandoIndex < totalBotellas - 1 ? 
-                `➡️ Siguiente Botella (${botellaPesandoIndex + 2}/${totalBotellas})` : 
+                `► Siguiente Botella (${botellaPesandoIndex + 2}/${totalBotellas})` : 
                 '✓ Finalizar Pesaje y Procesar'
               }
             </button>
           </div>
-        )}
+        </div>
       </div>
     );
   }
 
   if (paso === 'procesamiento') {
     return (
-      <div className="bottle-handling-station">
-        <h2>🍾 Bottle Handling (V2 Interactivo)</h2>
-        
-        <div className="procesamiento-activo">
-          <h3>⚙️ Procesando botellas...</h3>
-          <div className="progreso">
-            <p>Botella {indiceProcesando + 1} de {productosConAlcohol.length}</p>
+      <div className="bottle-handling-station" style={{
+        minHeight: '100vh',
+        background: 'linear-gradient(135deg, #1a0026 0%, #3c0059 50%, #1a0026 100%)',
+        padding: '40px',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}>
+        <div style={{
+          maxWidth: '600px',
+          background: 'rgba(255, 255, 255, 0.95)',
+          borderRadius: '16px',
+          padding: '50px',
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
+          textAlign: 'center'
+        }}>
+          <h2 style={{ color: '#3c0059', marginBottom: '30px', fontSize: '28px' }}>
+            ■ Bottle Handling Station
+          </h2>
+          
+          <div style={{
+            background: 'linear-gradient(135deg, #f3e5ff 0%, #e0d1f5 100%)',
+            borderRadius: '12px',
+            padding: '30px',
+            marginBottom: '30px'
+          }}>
+            <h3 style={{ color: '#3c0059', fontSize: '22px', marginBottom: '20px' }}>
+              Procesando botellas...
+            </h3>
+            <div className="spinner" style={{
+              width: '60px',
+              height: '60px',
+              border: '5px solid #f3e5ff',
+              borderTop: '5px solid #9d4edd',
+              borderRadius: '50%',
+              animation: 'spin 1s linear infinite',
+              margin: '0 auto 25px'
+            }}></div>
+            <p style={{ fontSize: '18px', color: '#666', marginBottom: '10px' }}>
+              Botella {indiceProcesando + 1} de {productosConAlcohol.length}
+            </p>
             {productosConAlcohol[indiceProcesando] && (
-              <p className="producto-actual">
-                🔄 {productosConAlcohol[indiceProcesando].nombre}
+              <p style={{ 
+                fontSize: '16px', 
+                color: '#9d4edd', 
+                fontWeight: 'bold',
+                background: 'white',
+                padding: '12px',
+                borderRadius: '8px',
+                marginTop: '15px'
+              }}>
+                ► {productosConAlcohol[indiceProcesando].nombre}
               </p>
             )}
+          </div>
+          
+          <div style={{
+            width: '100%',
+            height: '8px',
+            background: '#e0e0e0',
+            borderRadius: '4px',
+            overflow: 'hidden'
+          }}>
+            <div style={{
+              width: `${((indiceProcesando + 1) / productosConAlcohol.length) * 100}%`,
+              height: '100%',
+              background: 'linear-gradient(90deg, #9d4edd 0%, #7b2cbf 100%)',
+              transition: 'width 0.3s ease'
+            }}></div>
           </div>
         </div>
       </div>
@@ -827,96 +1105,289 @@ Total original necesario:    ${totalOriginal} botellas
     // Mostrar alerta en consola
     console.log(generarAlertaDetallada());
 
+    const totalOriginal = resultadosProcesamiento.reduce((sum, r) => sum + r.cantidadNecesaria, 0);
+    const totalReutilizado = resultadosProcesamiento.reduce((sum, r) => sum + r.cantidadReutilizada, 0);
+    const totalRellenado = resultadosProcesamiento.reduce((sum, r) => sum + r.cantidadRellenada, 0);
+    const totalDesechado = resultadosProcesamiento.reduce((sum, r) => sum + r.cantidadDesechada, 0);
+    const totalComprar = resultadosProcesamiento.reduce((sum, r) => sum + r.cantidadNecesariaComprar, 0);
+    const ahorroBotellas = totalOriginal - totalComprar;
+    const porcentajeAhorro = ((ahorroBotellas / totalOriginal) * 100).toFixed(1);
+
     return (
-      <div className="bottle-handling-station">
-        <h2>🍾 Bottle Handling (V2 Interactivo)</h2>
-        
-        <div className="alert success">
-          <p><strong>✅ {mensaje}</strong></p>
-          <p style={{ fontSize: '14px', marginTop: '10px' }}>
-            📋 Pedido: <strong>{pedidoActual?.idPedido}</strong> | 
-            ✈️ {aerolinea?.nombre} ({aerolinea?.codigo})
-          </p>
-        </div>
+      <div className="bottle-handling-station" style={{
+        minHeight: '100vh',
+        background: 'linear-gradient(135deg, #1a0026 0%, #3c0059 50%, #1a0026 100%)',
+        padding: '40px'
+      }}>
+        <div style={{
+          maxWidth: '1200px',
+          margin: '0 auto'
+        }}>
+          <h2 style={{ 
+            color: 'white', 
+            marginBottom: '30px', 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: '10px',
+            fontSize: '28px'
+          }}>
+            <span style={{ fontSize: '32px' }}>■</span> Bottle Handling Station
+          </h2>
 
-        {/* Criterios de Aerolínea */}
-        {aerolinea && (
-          <div className="alert info" style={{ marginTop: '20px', textAlign: 'left' }}>
-            <h4 style={{ marginTop: 0 }}>📐 Criterios de Calidad - {aerolinea.codigo}</h4>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', fontSize: '13px' }}>
-              <div>
-                <strong>✅ REUTILIZAR:</strong>
-                <ul style={{ marginTop: '5px', paddingLeft: '20px' }}>
-                  <li>Llenado: ≥ {aerolinea.politicasAlcohol.criteriosCalidad.reutilizar.fillLevelMin}%</li>
-                  <li>Sello: {aerolinea.politicasAlcohol.criteriosCalidad.reutilizar.sealStatus.join(', ')}</li>
-                  <li>Limpieza: ≥ {aerolinea.politicasAlcohol.criteriosCalidad.reutilizar.cleanlinessScoreMin}/10</li>
-                </ul>
-              </div>
-              <div>
-                <strong>🔄 RELLENAR:</strong>
-                <ul style={{ marginTop: '5px', paddingLeft: '20px' }}>
-                  <li>Llenado: {aerolinea.politicasAlcohol.criteriosCalidad.rellenar.fillLevelMin}% - {aerolinea.politicasAlcohol.criteriosCalidad.rellenar.fillLevelMax}%</li>
-                  <li>Sello: {aerolinea.politicasAlcohol.criteriosCalidad.rellenar.sealStatus.join(', ')}</li>
-                  <li>Limpieza: ≥ {aerolinea.politicasAlcohol.criteriosCalidad.rellenar.cleanlinessScoreMin}/10</li>
-                </ul>
-              </div>
+          {/* Success Banner */}
+          <div style={{
+            background: 'rgba(255, 255, 255, 0.95)',
+            borderRadius: '16px',
+            padding: '30px',
+            marginBottom: '30px',
+            boxShadow: '0 8px 24px rgba(76, 175, 80, 0.4)',
+            textAlign: 'center',
+            border: '3px solid #4caf50'
+          }}>
+            <h3 style={{ fontSize: '28px', margin: '0 0 15px 0', color: '#4caf50' }}>
+              ✓ Procesamiento Completado
+            </h3>
+            <p style={{ fontSize: '16px', margin: 0, color: '#333' }}>
+              ■ Pedido: <strong>{pedidoActual?.idPedido}</strong> | 
+              ■ {aerolinea?.nombre} ({aerolinea?.codigo})
+            </p>
+          </div>
+
+          {/* Stats Cards */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+            gap: '20px',
+            marginBottom: '30px'
+          }}>
+            <div style={{
+              background: 'rgba(255, 255, 255, 0.95)',
+              borderRadius: '12px',
+              padding: '25px',
+              textAlign: 'center',
+              boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2)'
+            }}>
+              <div style={{ fontSize: '14px', color: '#666', marginBottom: '10px' }}>Original Necesario</div>
+              <div style={{ fontSize: '36px', fontWeight: 'bold', color: '#333' }}>{totalOriginal}</div>
+              <div style={{ fontSize: '13px', color: '#999' }}>botellas</div>
             </div>
-            {aerolinea.politicasAlcohol.criteriosCalidad.descartarVinosCervezasAbiertas && (
-              <p style={{ marginTop: '10px', color: '#d32f2f', fontWeight: 'bold' }}>
-                ⚠️ Vinos/cervezas abiertas se desechan automáticamente
-              </p>
-            )}
+            <div style={{
+              background: 'rgba(255, 255, 255, 0.95)',
+              borderRadius: '12px',
+              padding: '25px',
+              textAlign: 'center',
+              boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2)',
+              border: '2px solid #4caf50'
+            }}>
+              <div style={{ fontSize: '14px', color: '#666', marginBottom: '10px' }}>Reutilizadas</div>
+              <div style={{ fontSize: '36px', fontWeight: 'bold', color: '#4caf50' }}>{totalReutilizado}</div>
+              <div style={{ fontSize: '13px', color: '#999' }}>botellas</div>
+            </div>
+            <div style={{
+              background: 'rgba(255, 255, 255, 0.95)',
+              borderRadius: '12px',
+              padding: '25px',
+              textAlign: 'center',
+              boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2)',
+              border: '2px solid #ff9800'
+            }}>
+              <div style={{ fontSize: '14px', color: '#666', marginBottom: '10px' }}>Rellenadas</div>
+              <div style={{ fontSize: '36px', fontWeight: 'bold', color: '#ff9800' }}>{totalRellenado}</div>
+              <div style={{ fontSize: '13px', color: '#999' }}>botellas</div>
+            </div>
+            <div style={{
+              background: 'rgba(255, 255, 255, 0.95)',
+              borderRadius: '12px',
+              padding: '25px',
+              textAlign: 'center',
+              boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2)',
+              border: '2px solid #f44336'
+            }}>
+              <div style={{ fontSize: '14px', color: '#666', marginBottom: '10px' }}>Desechadas</div>
+              <div style={{ fontSize: '36px', fontWeight: 'bold', color: '#f44336' }}>{totalDesechado}</div>
+              <div style={{ fontSize: '13px', color: '#999' }}>botellas</div>
+            </div>
+            <div style={{
+              background: 'rgba(255, 255, 255, 0.95)',
+              borderRadius: '12px',
+              padding: '25px',
+              textAlign: 'center',
+              boxShadow: '0 4px 16px rgba(157, 78, 221, 0.4)',
+              border: '3px solid #9d4edd'
+            }}>
+              <div style={{ fontSize: '14px', marginBottom: '10px', color: '#666' }}>A Comprar</div>
+              <div style={{ fontSize: '36px', fontWeight: 'bold', color: '#9d4edd' }}>{totalComprar}</div>
+              <div style={{ fontSize: '13px', color: '#999' }}>botellas</div>
+            </div>
+            <div style={{
+              background: 'rgba(255, 255, 255, 0.95)',
+              borderRadius: '12px',
+              padding: '25px',
+              textAlign: 'center',
+              boxShadow: '0 4px 16px rgba(76, 175, 80, 0.4)',
+              border: '3px solid #4caf50'
+            }}>
+              <div style={{ fontSize: '14px', marginBottom: '10px', color: '#666' }}>Ahorro</div>
+              <div style={{ fontSize: '36px', fontWeight: 'bold', color: '#4caf50' }}>{porcentajeAhorro}%</div>
+              <div style={{ fontSize: '13px', color: '#999' }}>{ahorroBotellas} botellas</div>
+            </div>
           </div>
-        )}
 
-        <div className="resultados-procesamiento">
-          <h3>📊 Resumen de Procesamiento</h3>
-          
-          <table className="tabla-resultados">
-            <thead>
-              <tr>
-                <th>Producto</th>
-                <th>Original</th>
-                <th>Reutilizado</th>
-                <th>Rellenado</th>
-                <th>Desechado</th>
-                <th>A Comprar</th>
-                <th>Acción</th>
-              </tr>
-            </thead>
-            <tbody>
-              {resultadosProcesamiento.map((r, idx) => (
-                <tr key={idx}>
-                  <td>{r.producto.nombre}</td>
-                  <td>{r.cantidadNecesaria}</td>
-                  <td className="reutilizado">{r.cantidadReutilizada}</td>
-                  <td className="rellenado">{r.cantidadRellenada}</td>
-                  <td className="desechado">{r.cantidadDesechada}</td>
-                  <td className="comprar"><strong>{r.cantidadNecesariaComprar}</strong></td>
-                  <td>
-                    <span className={`badge badge-${r.accion.toLowerCase()}`}>
-                      {r.accion}
-                    </span>
-                  </td>
+          {/* Criterios de Calidad */}
+          {aerolinea && (
+            <div style={{
+              background: 'rgba(255, 255, 255, 0.95)',
+              borderRadius: '16px',
+              padding: '30px',
+              marginBottom: '30px',
+              boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2)'
+            }}>
+              <h4 style={{ margin: '0 0 20px 0', color: '#3c0059', fontSize: '20px' }}>
+                ■ Criterios de Calidad - {aerolinea.codigo}
+              </h4>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                <div style={{
+                  background: '#e8f5e9',
+                  borderRadius: '12px',
+                  padding: '20px',
+                  border: '2px solid #4caf50'
+                }}>
+                  <strong style={{ color: '#4caf50', fontSize: '16px' }}>✓ REUTILIZAR:</strong>
+                  <ul style={{ marginTop: '10px', paddingLeft: '20px', color: '#333' }}>
+                    <li>Llenado: ≥ {aerolinea.politicasAlcohol.criteriosCalidad.reutilizar.fillLevelMin}%</li>
+                    <li>Sello: {aerolinea.politicasAlcohol.criteriosCalidad.reutilizar.sealStatus.join(', ')}</li>
+                    <li>Limpieza: ≥ {aerolinea.politicasAlcohol.criteriosCalidad.reutilizar.cleanlinessScoreMin}/10</li>
+                  </ul>
+                </div>
+                <div style={{
+                  background: '#fff3e0',
+                  borderRadius: '12px',
+                  padding: '20px',
+                  border: '2px solid #ff9800'
+                }}>
+                  <strong style={{ color: '#ff9800', fontSize: '16px' }}>► RELLENAR:</strong>
+                  <ul style={{ marginTop: '10px', paddingLeft: '20px', color: '#333' }}>
+                    <li>Llenado: {aerolinea.politicasAlcohol.criteriosCalidad.rellenar.fillLevelMin}% - {aerolinea.politicasAlcohol.criteriosCalidad.rellenar.fillLevelMax}%</li>
+                    <li>Sello: {aerolinea.politicasAlcohol.criteriosCalidad.rellenar.sealStatus.join(', ')}</li>
+                    <li>Limpieza: ≥ {aerolinea.politicasAlcohol.criteriosCalidad.rellenar.cleanlinessScoreMin}/10</li>
+                  </ul>
+                </div>
+              </div>
+              {aerolinea.politicasAlcohol.criteriosCalidad.descartarVinosCervezasAbiertas && (
+                <p style={{ 
+                  marginTop: '15px', 
+                  padding: '15px', 
+                  background: '#ffebee', 
+                  border: '2px solid #f44336',
+                  borderRadius: '8px',
+                  color: '#d32f2f', 
+                  fontWeight: 'bold',
+                  margin: '15px 0 0 0'
+                }}>
+                  ■ Vinos/cervezas abiertas se desechan automáticamente
+                </p>
+              )}
+            </div>
+          )}
+
+          {/* Tabla de Resultados */}
+          <div style={{
+            background: 'rgba(255, 255, 255, 0.95)',
+            borderRadius: '16px',
+            padding: '30px',
+            marginBottom: '30px',
+            boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2)',
+            overflowX: 'auto'
+          }}>
+            <h3 style={{ margin: '0 0 20px 0', color: '#3c0059', fontSize: '20px' }}>
+              ■ Resumen de Procesamiento
+            </h3>
+            
+            <table style={{
+              width: '100%',
+              borderCollapse: 'collapse',
+              fontSize: '14px'
+            }}>
+              <thead>
+                <tr style={{ background: 'linear-gradient(135deg, #9d4edd 0%, #7b2cbf 100%)' }}>
+                  <th style={{ padding: '15px', textAlign: 'left', borderRadius: '8px 0 0 0', color: '#fff', fontWeight: 'bold' }}>Producto</th>
+                  <th style={{ padding: '15px', textAlign: 'center', color: '#fff', fontWeight: 'bold' }}>Original</th>
+                  <th style={{ padding: '15px', textAlign: 'center', color: '#fff', fontWeight: 'bold' }}>Reutilizado</th>
+                  <th style={{ padding: '15px', textAlign: 'center', color: '#fff', fontWeight: 'bold' }}>Rellenado</th>
+                  <th style={{ padding: '15px', textAlign: 'center', color: '#fff', fontWeight: 'bold' }}>Desechado</th>
+                  <th style={{ padding: '15px', textAlign: 'center', color: '#fff', fontWeight: 'bold' }}>A Comprar</th>
+                  <th style={{ padding: '15px', textAlign: 'center', borderRadius: '0 8px 0 0', color: '#fff', fontWeight: 'bold' }}>Acción</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-
-          <div className="resumen-totales">
-            <p>✅ Reutilizado: {resultadosProcesamiento.reduce((sum, r) => sum + r.cantidadReutilizada, 0)}</p>
-            <p>🔄 Rellenado: {resultadosProcesamiento.reduce((sum, r) => sum + r.cantidadRellenada, 0)}</p>
-            <p>🗑️ Desechado: {resultadosProcesamiento.reduce((sum, r) => sum + r.cantidadDesechada, 0)}</p>
-            <p><strong>🛒 A Comprar: {resultadosProcesamiento.reduce((sum, r) => sum + r.cantidadNecesariaComprar, 0)}</strong></p>
+              </thead>
+              <tbody>
+                {resultadosProcesamiento.map((r, idx) => (
+                  <tr key={idx} style={{
+                    background: idx % 2 === 0 ? '#f5f5f5' : 'white',
+                    borderBottom: '1px solid #e0e0e0'
+                  }}>
+                    <td style={{ padding: '15px', fontWeight: '500', color: '#333' }}>{r.producto.nombre}</td>
+                    <td style={{ padding: '15px', textAlign: 'center', color: '#333' }}>{r.cantidadNecesaria}</td>
+                    <td style={{ padding: '15px', textAlign: 'center', color: '#4caf50', fontWeight: 'bold' }}>{r.cantidadReutilizada}</td>
+                    <td style={{ padding: '15px', textAlign: 'center', color: '#ff9800', fontWeight: 'bold' }}>{r.cantidadRellenada}</td>
+                    <td style={{ padding: '15px', textAlign: 'center', color: '#f44336', fontWeight: 'bold' }}>{r.cantidadDesechada}</td>
+                    <td style={{ padding: '15px', textAlign: 'center', fontWeight: 'bold', color: '#333' }}>{r.cantidadNecesariaComprar}</td>
+                    <td style={{ padding: '15px', textAlign: 'center' }}>
+                      <span style={{
+                        background: r.accion === 'REUTILIZAR' ? '#4caf50' : r.accion === 'RELLENAR' ? '#ff9800' : '#757575',
+                        color: 'white',
+                        padding: '6px 12px',
+                        borderRadius: '6px',
+                        fontSize: '12px',
+                        fontWeight: 'bold',
+                        display: 'inline-block'
+                      }}>
+                        {r.accion}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+              <tfoot>
+                <tr style={{ background: 'linear-gradient(135deg, #f3e5ff 0%, #e0d1f5 100%)', borderTop: '3px solid #9d4edd' }}>
+                  <td style={{ padding: '20px', fontWeight: 'bold', fontSize: '15px', color: '#3c0059' }}>TOTALES</td>
+                  <td style={{ padding: '20px', textAlign: 'center', fontWeight: 'bold', fontSize: '15px', color: '#3c0059' }}>{totalOriginal}</td>
+                  <td style={{ padding: '20px', textAlign: 'center', fontWeight: 'bold', fontSize: '15px', color: '#4caf50' }}>{totalReutilizado}</td>
+                  <td style={{ padding: '20px', textAlign: 'center', fontWeight: 'bold', fontSize: '15px', color: '#ff9800' }}>{totalRellenado}</td>
+                  <td style={{ padding: '20px', textAlign: 'center', fontWeight: 'bold', fontSize: '15px', color: '#f44336' }}>{totalDesechado}</td>
+                  <td style={{ padding: '20px', textAlign: 'center', fontWeight: 'bold', fontSize: '16px', color: '#9d4edd' }}>{totalComprar}</td>
+                  <td style={{ padding: '20px', textAlign: 'center' }}></td>
+                </tr>
+              </tfoot>
+            </table>
           </div>
-        </div>
 
-        <button 
-          className="btn btn-primary"
-          onClick={reiniciarEstacion}
-        >
-          ✓ Continuar a Pick/Pack
-        </button>
+          <button 
+            onClick={reiniciarEstacion}
+            style={{
+              width: '100%',
+              background: 'linear-gradient(135deg, #9d4edd 0%, #7b2cbf 100%)',
+              color: 'white',
+              border: 'none',
+              padding: '20px',
+              borderRadius: '12px',
+              fontSize: '18px',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              boxShadow: '0 4px 16px rgba(157, 78, 221, 0.4)',
+              transition: 'transform 0.2s, boxShadow 0.2s'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-2px)';
+              e.currentTarget.style.boxShadow = '0 6px 20px rgba(157, 78, 221, 0.5)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = '0 4px 16px rgba(157, 78, 221, 0.4)';
+            }}
+          >
+            ✓ Continuar a Pick/Pack
+          </button>
+        </div>
       </div>
     );
   }

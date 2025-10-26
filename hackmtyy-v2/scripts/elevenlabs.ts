@@ -1,6 +1,6 @@
 // --- 🔑 API KEYS ---
 const OPENROUTER_API_KEY = "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";
-const ELEVENLABS_API_KEY = "sk_830a945e429d51462bf7e79649fa6bde4633e158e65814fa";
+const ELEVENLABS_API_KEY = "sk_5c3c6ad896443e7c9eab037631227567648975fd5e7fcc66";
 const ELEVENLABS_VOICE_ID = "zA6D7RyKdc2EClouEMkP";
 
 // --- Generar frase motivadora y convertirla a audio ---

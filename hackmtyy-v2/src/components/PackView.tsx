@@ -1,8 +1,9 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import CameraPreview from "./CameraPreview";
 import QRScanner from "./QRScanner";
 import { getCarritoByQRId } from "../services/carritosCatering";
 import { Project } from "../types/carritosCatering";
+import { generatePackMotivation, playMotivationalAudio } from "../services/motivationService";
 
 // Tipos para los productos
 interface Product {
@@ -25,6 +26,67 @@ const PackView = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [carritoInfo, setCarritoInfo] = useState<Project | null>(null);
+
+  // 💪 Estado para motivación
+  const [motivationText, setMotivationText] = useState<string | null>(null);
+  const [motivationLoading, setMotivationLoading] = useState<boolean>(false);
+  const motivationAudioRef = useRef<HTMLAudioElement | null>(null);
+
+  // 💪 Generar motivación al ingresar al componente y luego cada 10 segundos
+  useEffect(() => {
+    // Función para generar una nueva motivación
+    const generateNewMotivation = async () => {
+      console.log("✨ [PackView] Generando nueva motivación...");
+      setMotivationLoading(true);
+      
+      try {
+        const motivation = await generatePackMotivation();
+        
+        console.log("📝 [PackView] Motivación recibida:", motivation);
+        
+        if (motivation) {
+          setMotivationText(motivation.text);
+          console.log("💬 [PackView] Texto de motivación establecido:", motivation.text);
+          
+          // Detener audio anterior si existe
+          if (motivationAudioRef.current) {
+            motivationAudioRef.current.pause();
+          }
+          
+          if (motivation.audioUrl) {
+            motivationAudioRef.current = playMotivationalAudio(motivation.audioUrl);
+            console.log("🎵 [PackView] Audio reproduciéndose");
+          }
+        } else {
+          console.error("❌ [PackView] No se recibió motivación");
+        }
+      } catch (error) {
+        console.error("❌ [PackView] Error al generar motivación:", error);
+      } finally {
+        setMotivationLoading(false);
+      }
+    };
+
+    // Generar inmediatamente la primera motivación al ingresar al componente
+    console.log("🚀 [PackView] Componente montado - Iniciando sistema de motivación");
+    generateNewMotivation();
+
+    // Configurar intervalo para generar cada 10 segundos
+    const interval = setInterval(() => {
+      console.log("⏰ [PackView] 10 segundos transcurridos, generando nueva motivación...");
+      generateNewMotivation();
+    }, 10000); // 10 segundos
+
+    // Cleanup: detener audio y limpiar intervalo al desmontar
+    return () => {
+      console.log("🛑 [PackView] Desmontando componente - Deteniendo sistema de motivación");
+      clearInterval(interval);
+      if (motivationAudioRef.current) {
+        motivationAudioRef.current.pause();
+        motivationAudioRef.current = null;
+      }
+    };
+  }, []); // Se ejecuta solo al montar el componente
 
   // Iniciar escaneo de QR
   const handleStartScan = () => {
@@ -134,6 +196,11 @@ const PackView = () => {
     setQrCode("");
     setProducts([]);
     setTrolleyLoaded(false);
+    setMotivationText(null);
+    if (motivationAudioRef.current) {
+      motivationAudioRef.current.pause();
+      motivationAudioRef.current = null;
+    }
   };
 
   return (
@@ -257,6 +324,19 @@ const PackView = () => {
                 </p>
               </div>
             )}
+            
+            {/* 💪 Mensaje Motivacional */}
+            {motivationText && (
+              <div className="status status--success" style={{ marginTop: "12px", marginBottom: "12px", fontSize: "1rem", padding: "16px" }}>
+                💪 <strong>{motivationText}</strong>
+              </div>
+            )}
+            {motivationLoading && (
+              <div className="status status--info" style={{ marginTop: "12px", marginBottom: "12px" }}>
+                🎙️ Generando mensaje motivacional...
+              </div>
+            )}
+            
             <p>
               La IA está monitoreando la estación de trabajo. 
               Coloca los productos en el área visible de la cámara.

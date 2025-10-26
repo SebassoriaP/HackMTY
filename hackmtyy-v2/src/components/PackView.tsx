@@ -1,10 +1,11 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import CameraPreview from "./CameraPreview";
+import AICamera from "./AICamera";
 import QRScanner from "./QRScanner";
 import { getCarritoByQRId } from "../services/carritosCatering";
 import { Project } from "../types/carritosCatering";
 import { generatePackMotivation, playMotivationalAudio } from "../services/motivationService";
 import { cleanupAudio } from "../utils/audioCleanup";
+import { Detection } from "../hooks/useYOLODetection";
 
 // Tipos para los productos
 interface Product {
@@ -227,8 +228,9 @@ const PackView = () => {
     });
   }, [trolleyLoaded, products.length]);
 
-  // Simular detección automática de IA (BACKUP - solo si no hay detecciones reales)
-  // Este useEffect se puede remover completamente si prefieres solo usar YOLO real
+  // NOTA: La detección automática ahora se hace con YOLO real a través de AICamera
+  // Este useEffect de simulación está DESHABILITADO para usar solo la IA real
+  /*
   useEffect(() => {
     if (!trolleyLoaded || products.length === 0) return;
 
@@ -253,6 +255,7 @@ const PackView = () => {
 
     return () => clearInterval(interval);
   }, [trolleyLoaded]); // Removemos 'products' de las dependencias para evitar loop
+  */
 
   // Calcular progreso
   const detectedCount = products.filter((p) => p.detected).length;
@@ -421,16 +424,21 @@ const PackView = () => {
           <div className="pack-view__workspace">
             {/* Cámara con IA en tiempo real */}
             <div className="pack-view__camera">
-              <CameraPreview title="Cámara con IA - Detección Automática" />
+              <AICamera 
+                onDetectionUpdate={handleDetectionUpdate}
+                showBoundingBoxes={true}
+                showWarnings={true}
+                fps={5}
+              />
               <div style={{
-                background: "rgba(157, 78, 221, 0.08)",
+                background: "rgba(34, 197, 94, 0.08)",
                 padding: "12px",
                 borderRadius: "8px",
                 fontSize: "0.9rem",
                 marginTop: "8px",
-                border: "2px solid rgba(157, 78, 221, 0.2)"
+                border: "2px solid rgba(34, 197, 94, 0.3)"
               }}>
-                <strong>Simulación:</strong> La IA detecta productos automáticamente cada 3 segundos
+                <strong>✨ IA YOLO en tiempo real:</strong> La cámara detecta objetos automáticamente usando YOLOv8
               </div>
             </div>
 

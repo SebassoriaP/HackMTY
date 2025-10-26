@@ -20,7 +20,7 @@ export async function initializeAllData() {
     await initializeFirebaseData();
     
     console.log('\n╔═══════════════════════════════════════════════╗');
-    console.log('║  ✅ ¡INICIALIZACIÓN COMPLETADA CON ÉXITO! ✅  ║');
+    console.log('║  ✅ ¡INICIALIZACIÓN COMPLETADA CON ÉXITO!    ✅  ║');
     console.log('╚═══════════════════════════════════════════════╝\n');
     
     console.log('📝 Próximos pasos:');

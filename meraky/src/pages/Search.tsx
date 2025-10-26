@@ -1,12 +1,12 @@
 import SearchAirline from "../components/SearchAirline"
-function Test() {
+function Bottles() {
 
   return (
     <>
-      <h1>Hello World</h1>
-      <SearchAirline/>
+       <SearchAirline/>
+
     </>
   )
 }
 
-export default Test
+export default Bottles

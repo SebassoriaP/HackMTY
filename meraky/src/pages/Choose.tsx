@@ -6,11 +6,11 @@ function Choose() {
 
   return (
     <>
-      <h1 className='bienvenida'>Bienvenido</h1>
+      <img src="https://sccgltd.com/wp-content/uploads/2017/08/Gategroup-Logo.png"  className="center-image" />
 
       <div className="btn-row">
-        <Link to="/pick" className="btn-glow">PICK</Link>
-        <Link to="/pack" className="btn-glow">PACK</Link>
+        <Link to="/bottles" className="btn-glow">Medición de Botellas</Link>
+        <Link to="/products" className="btn-glow">Verificación de Productos</Link>
       </div>
     </>
   )

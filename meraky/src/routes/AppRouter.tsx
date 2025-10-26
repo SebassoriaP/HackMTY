@@ -1,7 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import Test from "../pages/Test";
 import Choose from "../pages/Choose";
-import FlightSearch from "../pages/FlightSearch";
+import Search from "../pages/Search";
 
 
 const AppRouter = () => {
@@ -9,11 +9,11 @@ const AppRouter = () => {
     <Routes>
         <Route path="/" element={<Choose/>} />
 
-        <Route path="/pick" element={ 
-            <FlightSearch />
+        <Route path="/bottles" element={ 
+            <Search/>
         } />
 
-        <Route path="/pack" element={ 
+        <Route path="/pick" element={ 
             <Test />
         } />
 
